@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"github.com/keltia/cipher/null"
 	"bytes"
+	"fmt"
 	"github.com/keltia/cipher/caesar"
+	"github.com/keltia/cipher/null"
 )
 
 func main() {
-	var plain  = []byte("ABCDE")
+	var plain = []byte("ABCDE")
 	var cipher = make([]byte, len(plain))
 
 	c, _ := null.NewCipher()
@@ -16,7 +16,6 @@ func main() {
 	if !bytes.Equal(cipher, plain) {
 		fmt.Printf("plain: %s cipher: %s\n", string(plain), string(cipher))
 	}
-
 
 	cipher = make([]byte, len(plain))
 

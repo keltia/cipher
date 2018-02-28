@@ -1,11 +1,11 @@
 package crypto
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-var testCondensedData = []struct{a, b string}{
+var testCondensedData = []struct{ a, b string }{
 	{"ABCDE", "ABCDE"},
 	{"AAAAA", "A"},
 	{"ARABESQUE", "ARBESQU"},

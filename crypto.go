@@ -1,8 +1,8 @@
 package crypto
 
 import (
-	"strings"
 	"log"
+	"strings"
 )
 
 type Bigram struct {

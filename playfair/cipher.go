@@ -40,7 +40,7 @@ func (c *playfairCipher) transform(pt couple, opt byte) (ct couple) {
 	}
 	if bg1.c == bg2.c {
 		return couple{
-			c.c2i[couple{(bg1.r + opt) %5, bg1.c}],
+			c.c2i[couple{(bg1.r + opt) % 5, bg1.c}],
 			c.c2i[couple{(bg2.r + opt) % 5, bg2.c}]}
 	}
 	return couple{c.c2i[couple{bg1.r, bg2.c}], c.c2i[couple{bg2.r, bg1.r}]}
@@ -51,8 +51,8 @@ func expandKey(key string, i2c map[byte]couple, c2i map[couple]byte) {
 	for i := range codeWord {
 		for j := range codeWord {
 			c := key[ind]
-			i2c[byte(c)] = couple{byte(i),byte(j)}
-			c2i[couple{byte(i),byte(j)}] = byte(c)
+			i2c[byte(c)] = couple{byte(i), byte(j)}
+			c2i[couple{byte(i), byte(j)}] = byte(c)
 			ind++
 		}
 	}
@@ -78,7 +78,7 @@ func (c *playfairCipher) Encrypt(dst, src []byte) {
 	}
 
 	dst = make([]byte, len(src))
-	
+
 	for i := 0; i < len(src); i += 2 {
 		bg := c.transform(couple{src[i], src[i+1]}, opEncrypt)
 		dst[i] = bg.r
