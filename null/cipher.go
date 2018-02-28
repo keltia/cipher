@@ -21,7 +21,6 @@ func (c *nullCipher) Encrypt(dst, src []byte) {
 	for i, ch := range src {
 		dst[i] = ch
 	}
-	message("cipher=%s\n", string(dst))
 }
 
 func (c *nullCipher) Decrypt(dst, src []byte) {
