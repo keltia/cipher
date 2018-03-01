@@ -19,3 +19,18 @@ func TestCondense(t *testing.T) {
 		assert.Equal(t, td.b, Condense(td.a))
 	}
 }
+
+var testExpandData = []struct{ a, b string }{
+	{"AAA", "AXAXA"},
+	{"AAAA", "AXAXAXA"},
+	{"AAABRAACADAABRA", "AXAXABRAXACADAXABRA"},
+	{"ARABESQUE", "ARABESQUE"},
+	{"LANNONCE", "LANXNONCE"},
+	{"PJRJJJJJJS", "PJRJJXJXJXJXJS"},
+}
+
+func TestExpand(t *testing.T) {
+	for _, td := range testExpandData {
+		assert.EqualValues(t, []byte(td.b), Expand([]byte(td.a)))
+	}
+}
