@@ -78,10 +78,8 @@ var gc cipher.Block
 func BenchmarkNewCipher(b *testing.B) {
 	var c cipher.Block
 
-	for _, pair := range encryptCaesarTests {
-		for n := 0; n < b.N; n++ {
-			c, _ = NewCipher(pair.key)
-		}
+	for n := 0; n < b.N; n++ {
+		c, _ = NewCipher(3)
 	}
 	gc = c
 }
