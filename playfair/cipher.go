@@ -2,13 +2,13 @@ package playfair
 
 import (
 	"crypto/cipher"
+	"fmt"
 	"github.com/keltia/cipher"
 	"log"
-	"fmt"
 )
 
 const (
-	alphabet     = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+	alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 
 	opEncrypt = 1
 	opDecrypt = 4
@@ -44,12 +44,12 @@ func (c *Cipher) transform(pt couple, opt byte) (ct couple) {
 	if bg1.r == bg2.r {
 		ct1 := couple{bg1.r, (bg1.c + opt) % 5}
 		ct2 := couple{bg2.r, (bg2.c + opt) % 5}
-		return couple{c.c2i[ct1],c.c2i[ct2]}
+		return couple{c.c2i[ct1], c.c2i[ct2]}
 	}
 	if bg1.c == bg2.c {
 		ct1 := couple{(bg1.r + opt) % 5, bg1.c}
 		ct2 := couple{(bg2.r + opt) % 5, bg2.c}
-		return couple{c.c2i[ct1],c.c2i[ct2]}
+		return couple{c.c2i[ct1], c.c2i[ct2]}
 	}
 	ct1 := couple{bg1.r, bg2.c}
 	ct2 := couple{bg2.r, bg1.c}
@@ -62,8 +62,8 @@ func expandKey(key string, i2c map[byte]couple, c2i map[couple]byte) {
 	for i := range codeWord {
 		for j := range codeWord {
 			c := key[ind]
-			i2c[byte(c)] = couple{byte(i), byte(j)}
-			c2i[couple{byte(i), byte(j)}] = byte(c)
+			i2c[c] = couple{byte(i), byte(j)}
+			c2i[couple{byte(i), byte(j)}] = c
 			ind++
 		}
 	}
