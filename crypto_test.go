@@ -51,6 +51,7 @@ var testExpandData = []struct{ a, b string }{
 	{"ARABESQUE", "ARABESQUE"},
 	{"LANNONCE", "LANXNONCE"},
 	{"PJRJJJJJJS", "PJRJXJXJXJXJXJS"},
+	{"ABCDEFGHJJKLM", "ABCDEFGHJXJKLM"},
 }
 
 var testExpandInsertData = []struct{ a, b string }{
@@ -60,6 +61,7 @@ var testExpandInsertData = []struct{ a, b string }{
 	{"ARABESQUE", "ARABESQUE"},
 	{"LANNONCE", "LANXNONCE"},
 	{"PJRJJJJJJS", "PJRJJXJXJXJXJS"},
+	{"ABCDEFGHJJKLM", "ABCDEFGHJXJKLM"},
 }
 
 func TestExpand(t *testing.T) {
