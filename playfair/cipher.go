@@ -39,9 +39,7 @@ func (c *Cipher) Debug() {
 func (c *Cipher) transform(pt couple, opt byte) (ct couple) {
 
 	bg1 := c.i2c[pt.r]
-	message("line/bg1=%v", bg1)
 	bg2 := c.i2c[pt.c]
-	message("bg2=%v", bg2)
 	if bg1.r == bg2.r {
 		ct1 := couple{bg1.r, (bg1.c + opt) % 5}
 		ct2 := couple{bg2.r, (bg2.c + opt) % 5}
@@ -50,14 +48,10 @@ func (c *Cipher) transform(pt couple, opt byte) (ct couple) {
 	if bg1.c == bg2.c {
 		ct1 := couple{(bg1.r + opt) % 5, bg1.c}
 		ct2 := couple{(bg2.r + opt) % 5, bg2.c}
-		message("col/ct1=%v", ct1)
-		message("ct2=%v", ct2)
 		return couple{c.c2i[ct1],c.c2i[ct2]}
 	}
 	ct1 := couple{bg1.r, bg2.c}
 	ct2 := couple{bg2.r, bg1.c}
-	message("sq/ct1=%v", ct1)
-	message("ct2=%v", ct2)
 	return couple{c.c2i[ct1], c.c2i[ct2]}
 }
 
@@ -80,7 +74,6 @@ func NewCipher(key string) (cipher.Block, error) {
 		c2i: map[couple]byte{},
 	}
 	expandKey(c.key, c.i2c, c.c2i)
-	c.Debug()
 	return c, nil
 }
 
@@ -93,19 +86,17 @@ func (c *Cipher) Encrypt(dst, src []byte) {
 		src = append(src, 'X')
 	}
 
-	dst = make([]byte, len(src))
-
 	for i := 0; i < len(src); i += 2 {
 		bg := c.transform(couple{src[i], src[i+1]}, opEncrypt)
-		message("bg=%v", bg)
 		dst[i] = bg.r
 		dst[i+1] = bg.c
-		message("dst=%s", string(dst))
 	}
 }
 
 func (c *Cipher) Decrypt(dst, src []byte) {
-	dst = make([]byte, len(src))
+	if (len(src) % 2) == 1 {
+		panic("odd number of elements")
+	}
 
 	for i := 0; i < len(src); i += 2 {
 		bg := c.transform(couple{src[i], src[i+1]}, opDecrypt)
