@@ -63,6 +63,7 @@ func BenchmarkCipher_Encrypt(b *testing.B) {
 
 	dst := make([]byte, len(pt))
 
+	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		c.Encrypt(dst, pt)
 	}
@@ -75,6 +76,7 @@ func BenchmarkCipher_Decrypt(b *testing.B) {
 
 	dst := make([]byte, len(ct))
 
+	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		c.Decrypt(dst, ct)
 	}

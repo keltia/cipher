@@ -90,6 +90,8 @@ func BenchmarkCaesarCipher_Encrypt(b *testing.B) {
 
 		plain := []byte(pair.pt)
 		cipher := make([]byte, len(plain))
+
+		b.ResetTimer()
 		for n := 0; n < b.N; n++ {
 			c.Encrypt(cipher, plain)
 		}
@@ -101,6 +103,8 @@ func BenchmarkCaesarCipher_Decrypt(b *testing.B) {
 		c, _ := NewCipher(pair.key)
 		cipher := []byte(pair.ct)
 		nplain := make([]byte, len(pair.pt))
+
+		b.ResetTimer()
 		for n := 0; n < b.N; n++ {
 			c.Decrypt(nplain, cipher)
 		}
