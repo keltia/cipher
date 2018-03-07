@@ -20,6 +20,12 @@ func TestCondense(t *testing.T) {
 	}
 }
 
+func TestCondense1(t *testing.T) {
+	for _, td := range testCondensedData {
+		assert.Equal(t, td.b, Condense1(td.a))
+	}
+}
+
 var bar string
 
 func BenchmarkCondense(b *testing.B) {
