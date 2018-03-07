@@ -33,6 +33,18 @@ func TestPlayfairCipher_Encrypt(t *testing.T) {
 	assert.EqualValues(t, ct, dst)
 }
 
+func TestPlayfairCipher_EncryptX(t *testing.T) {
+	c, _ := NewCipher("PLAYFAIREXAMPLE")
+
+	pt := []byte("HID")
+	ct := []byte("BMGE")
+
+	dst := make([]byte, len(pt)+1)
+
+	c.Encrypt(dst, pt)
+	assert.EqualValues(t, ct, dst)
+}
+
 func TestPlayfairCipher_Decrypt(t *testing.T) {
 	c, _ := NewCipher("PLAYFAIREXAMPLE")
 
@@ -43,6 +55,18 @@ func TestPlayfairCipher_Decrypt(t *testing.T) {
 
 	c.Decrypt(dst, ct)
 	assert.EqualValues(t, pt, dst)
+}
+
+func TestPlayfairCipher_DecryptPanic(t *testing.T) {
+	c, _ := NewCipher("PLAYFAIREXAMPLE")
+
+	ct := []byte("BMO")
+
+	dst := make([]byte, len(ct))
+
+	assert.Panics(t, func() {
+		c.Decrypt(dst, ct)
+	})
 }
 
 var gc cipher.Block
