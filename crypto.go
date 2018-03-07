@@ -50,7 +50,7 @@ func insert(src []byte, obj byte, ind int) []byte {
 	return dst
 }
 
-func Expand(src []byte) []byte {
+func ExpandBroken(src []byte) []byte {
 	var i int
 	var dst []byte
 
@@ -71,7 +71,7 @@ func Expand(src []byte) []byte {
 	return dst
 }
 
-func ExpandInsert(src []byte) []byte {
+func Expand(src []byte) []byte {
 	//dst = append(dst, src[len(src) - 1])
 	for i := 0; i < len(src)-1; {
 		if src[i] == src[i+1] {
