@@ -1,0 +1,16 @@
+language: go
+go:
+- "1.10"
+- master
+matrix:
+  allow_failures:
+  - go: master
+branches:
+  only:
+  - develop
+  - master
+install:
+  - go get github.com/stretchr/testify/assert
+script:
+  - make
+  - make test
