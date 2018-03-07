@@ -25,8 +25,8 @@ var bar string
 func BenchmarkCondense(b *testing.B) {
 	var r string
 
-	for n := 0; n < b.N; n++ {
-		for _, td := range testCondensedData {
+	for _, td := range testCondensedData {
+		for n := 0; n < b.N; n++ {
 			r = Condense(td.a)
 		}
 	}
@@ -36,8 +36,8 @@ func BenchmarkCondense(b *testing.B) {
 func BenchmarkCondense1(b *testing.B) {
 	var r string
 
-	for n := 0; n < b.N; n++ {
-		for _, td := range testCondensedData {
+	for _, td := range testCondensedData {
+		for n := 0; n < b.N; n++ {
 			r = Condense1(td.a)
 		}
 	}
@@ -87,8 +87,8 @@ var foo []byte
 func BenchmarkExpand(b *testing.B) {
 	var r []byte
 
-	for n := 0; n < b.N; n++ {
-		for _, td := range testExpandData {
+	for _, td := range testExpandData {
+		for n := 0; n < b.N; n++ {
 			r = ExpandBroken([]byte(td.a))
 		}
 	}
@@ -98,8 +98,8 @@ func BenchmarkExpand(b *testing.B) {
 func BenchmarkExpandInsert(b *testing.B) {
 	var r []byte
 
-	for n := 0; n < b.N; n++ {
-		for _, td := range testExpandData {
+	for _, td := range testExpandData {
+		for n := 0; n < b.N; n++ {
 			r = Expand([]byte(td.a))
 		}
 	}
