@@ -28,6 +28,9 @@ pkg: ${BIN} ${EXE}
 	zip pkg/${BIN}.zip ${XTRA} ${EXE}
 
 test:
+	go test ./...
+
+bench:
 	go test -bench=. ./...
 
 lint:
