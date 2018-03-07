@@ -2,7 +2,6 @@ package null
 
 import (
 	"crypto/cipher"
-	"log"
 )
 
 type nullCipher struct {
@@ -27,9 +26,4 @@ func (c *nullCipher) Encrypt(dst, src []byte) {
 // Decrypt is part of the interface
 func (c *nullCipher) Decrypt(dst, src []byte) {
 	copy(dst, src)
-}
-
-// verbose displays only if fVerbose is set
-func message(str string, a ...interface{}) {
-	log.Printf(str, a...)
 }
