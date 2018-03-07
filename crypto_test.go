@@ -66,13 +66,13 @@ var testExpandInsertData = []struct{ a, b string }{
 
 func TestExpand(t *testing.T) {
 	for _, td := range testExpandData {
-		assert.EqualValues(t, []byte(td.b), Expand([]byte(td.a)))
+		assert.EqualValues(t, []byte(td.b), ExpandBroken([]byte(td.a)))
 	}
 }
 
 func TestExpandInsert(t *testing.T) {
 	for _, td := range testExpandInsertData {
-		assert.EqualValues(t, []byte(td.b), ExpandInsert([]byte(td.a)))
+		assert.EqualValues(t, []byte(td.b), Expand([]byte(td.a)))
 	}
 }
 
@@ -89,7 +89,7 @@ func BenchmarkExpand(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		for _, td := range testExpandData {
-			r = Expand([]byte(td.a))
+			r = ExpandBroken([]byte(td.a))
 		}
 	}
 	foo = r
@@ -100,7 +100,7 @@ func BenchmarkExpandInsert(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		for _, td := range testExpandData {
-			r = ExpandInsert([]byte(td.a))
+			r = Expand([]byte(td.a))
 		}
 	}
 	foo = r
