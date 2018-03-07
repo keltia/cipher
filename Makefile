@@ -8,7 +8,7 @@ GOBIN=   ${GOPATH}/bin
 BIN=	old-crypto
 EXE=	${BIN}.exe
 
-SRCS= caesar/cipher.go		crypto.go			null/null_test.go \
+SRCS= caesar/cipher.go		crypto.go			null/cipher_test.go \
       caesar/cipher_test.go		crypto_test.go			playfair/cipher.go \
       cmd/old-crypto/main.go		null/cipher.go			playfair/cipher_test.go
 
