@@ -9,8 +9,6 @@ import (
 
 const (
 	alphabet     = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
-	alphabetSize = len(alphabet)
-	alphabetBase = 'A'
 
 	opEncrypt = 1
 	opDecrypt = 4
@@ -20,6 +18,7 @@ var (
 	codeWord = "01234"
 )
 
+// Cipher holds the key and transformation maps
 type Cipher struct {
 	key string
 	i2c map[byte]couple
@@ -30,12 +29,14 @@ type couple struct {
 	r, c byte
 }
 
+// Debug displays the internal state
 func (c *Cipher) Debug() {
 	fmt.Printf("key=%s\n", c.key)
 	fmt.Printf("i2c=%v\n", c.i2c)
 	fmt.Printf("c2i=%v\n", c.c2i)
 }
 
+// transform is the cipher itself
 func (c *Cipher) transform(pt couple, opt byte) (ct couple) {
 
 	bg1 := c.i2c[pt.r]
@@ -55,6 +56,7 @@ func (c *Cipher) transform(pt couple, opt byte) (ct couple) {
 	return couple{c.c2i[ct1], c.c2i[ct2]}
 }
 
+// expandKey create the two transformation maps
 func expandKey(key string, i2c map[byte]couple, c2i map[couple]byte) {
 	ind := 0
 	for i := range codeWord {
@@ -67,6 +69,7 @@ func expandKey(key string, i2c map[byte]couple, c2i map[couple]byte) {
 	}
 }
 
+// NewCipher is part of the interface
 func NewCipher(key string) (cipher.Block, error) {
 	c := &Cipher{
 		key: crypto.Condense(key + alphabet),
@@ -77,10 +80,12 @@ func NewCipher(key string) (cipher.Block, error) {
 	return c, nil
 }
 
+// BlockSize is part of the interface
 func (c *Cipher) BlockSize() int {
 	return 2
 }
 
+// Encrypt is part of the interface
 func (c *Cipher) Encrypt(dst, src []byte) {
 	if (len(src) % 2) == 1 {
 		src = append(src, 'X')
@@ -93,6 +98,7 @@ func (c *Cipher) Encrypt(dst, src []byte) {
 	}
 }
 
+// Decrypt is part of the interface
 func (c *Cipher) Decrypt(dst, src []byte) {
 	if (len(src) % 2) == 1 {
 		panic("odd number of elements")

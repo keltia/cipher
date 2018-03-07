@@ -8,7 +8,6 @@ import (
 const (
 	alphabet     = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	alphabetSize = len(alphabet)
-	alphabetBase = 'A'
 )
 
 type caesarCipher struct {
@@ -33,6 +32,7 @@ func expandKey(key byte, in, out map[byte]byte) {
 	}
 }
 
+// NewCipher creates a new instance of cipher.Block
 func NewCipher(key int) (cipher.Block, error) {
 	c := &caesarCipher{
 		key: byte(key),
@@ -43,16 +43,19 @@ func NewCipher(key int) (cipher.Block, error) {
 	return c, nil
 }
 
+// BlockSize is part of the interface
 func (c *caesarCipher) BlockSize() int {
 	return 1
 }
 
+// Encrypt is part of the interface
 func (c *caesarCipher) Encrypt(dst, src []byte) {
 	for i, ch := range src {
 		dst[i] = encrypt(ch, c.enc)
 	}
 }
 
+// Decrypt is part of the interface
 func (c *caesarCipher) Decrypt(dst, src []byte) {
 	for i, ch := range src {
 		dst[i] = decrypt(ch, c.dec)
