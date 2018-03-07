@@ -5,18 +5,6 @@ import (
 	"strings"
 )
 
-type Bigram struct {
-	r, c byte
-}
-
-type Key struct {
-	value string
-}
-
-func (k *Key) String() string {
-	return k.value
-}
-
 // Condense is ported from Ruby
 func Condense(str string) string {
 	var condensed []byte
@@ -42,6 +30,7 @@ func Condense1(str string) string {
 	return r
 }
 
+// insert one character inside the array
 func insert(src []byte, obj byte, ind int) []byte {
 	dst := make([]byte, 2*len(src))
 	copy(dst, src)
@@ -50,6 +39,7 @@ func insert(src []byte, obj byte, ind int) []byte {
 	return dst
 }
 
+// ExpandBroken is a rewrite of Expand
 func ExpandBroken(src []byte) []byte {
 	var i int
 	var dst []byte
@@ -62,23 +52,20 @@ func ExpandBroken(src []byte) []byte {
 			//message("<i=%d j=%d dst=%s", i, j, dst)
 		} else {
 			dst = append(dst, src[i])
-			i += 1
-			//message(">i=%d j=%d dst=%s", i, j, dst)
+			i++
 		}
-		j += 1
+		j++
 	}
-	//message("---")
 	return dst
 }
 
+// Expand is a port of the Ruby version.
 func Expand(src []byte) []byte {
 	//dst = append(dst, src[len(src) - 1])
 	for i := 0; i < len(src)-1; {
 		if src[i] == src[i+1] {
 			src = insert(src, 'X', i+1)
-			//message("src=%v", src)
 		}
-		//message("i=%d src=%s", i, src)
 		i += 2
 	}
 	//message("--->")
