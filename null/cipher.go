@@ -21,17 +21,12 @@ func (c *nullCipher) BlockSize() int {
 
 // Encrypt is part of the interface
 func (c *nullCipher) Encrypt(dst, src []byte) {
-	for i, ch := range src {
-		dst[i] = ch
-	}
+	copy(dst, src)
 }
 
 // Decrypt is part of the interface
 func (c *nullCipher) Decrypt(dst, src []byte) {
 	copy(dst, src)
-	for i, ch := range src {
-		dst[i] = ch
-	}
 }
 
 // verbose displays only if fVerbose is set
