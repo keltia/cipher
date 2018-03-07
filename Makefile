@@ -31,7 +31,7 @@ test:
 	go test -bench=. ./...
 
 lint:
-	gometalinter
+	gometalinter ./...
 
 install: ${BIN}
 	go install ${OPTS} .
