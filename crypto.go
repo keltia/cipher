@@ -25,6 +25,7 @@ func Condense1(str string) string {
 	for _, ch := range str {
 		if _, ok := s[ch]; !ok {
 			r = r + string(ch)
+			s[ch] = true
 		}
 	}
 	return r
