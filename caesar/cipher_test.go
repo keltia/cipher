@@ -1,6 +1,7 @@
 package caesar
 
 import (
+	"crypto/cipher"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -46,13 +47,64 @@ func TestNewCipher(t *testing.T) {
 		c, _ := NewCipher(pair.key)
 
 		assert.EqualValues(t, 1, c.BlockSize())
+	}
+}
+
+func TestCaesarCipher_Encrypt(t *testing.T) {
+	for _, pair := range encryptCaesarTests {
+		c, _ := NewCipher(pair.key)
+
+		assert.EqualValues(t, 1, c.BlockSize())
 		plain := []byte(pair.pt)
 		cipher := make([]byte, len(plain))
 		c.Encrypt(cipher, plain)
 		assert.Equal(t, []byte(pair.ct), cipher)
+	}
+}
 
-		nplain := make([]byte, len(plain))
+func TestCaesarCipher_Decrypt(t *testing.T) {
+	for _, pair := range encryptCaesarTests {
+		c, _ := NewCipher(pair.key)
+
+		cipher := []byte(pair.ct)
+		nplain := make([]byte, len(pair.pt))
 		c.Decrypt(nplain, cipher)
 		assert.Equal(t, []byte(pair.pt), nplain)
+	}
+}
+
+var gc cipher.Block
+
+func BenchmarkNewCipher(b *testing.B) {
+	var c cipher.Block
+
+	for _, pair := range encryptCaesarTests {
+		for n := 0; n < b.N; n++ {
+			c, _ = NewCipher(pair.key)
+		}
+	}
+	gc = c
+}
+
+func BenchmarkCaesarCipher_Encrypt(b *testing.B) {
+	for _, pair := range encryptCaesarTests {
+		c, _ := NewCipher(pair.key)
+
+		plain := []byte(pair.pt)
+		cipher := make([]byte, len(plain))
+		for n := 0; n < b.N; n++ {
+			c.Encrypt(cipher, plain)
+		}
+	}
+}
+
+func BenchmarkCaesarCipher_Decrypt(b *testing.B) {
+	for _, pair := range encryptCaesarTests {
+		c, _ := NewCipher(pair.key)
+		cipher := []byte(pair.ct)
+		nplain := make([]byte, len(pair.pt))
+		for n := 0; n < b.N; n++ {
+			c.Decrypt(nplain, cipher)
+		}
 	}
 }
