@@ -1,6 +1,7 @@
 package playfair
 
 import (
+	"crypto/cipher"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -42,6 +43,17 @@ func TestPlayfairCipher_Decrypt(t *testing.T) {
 
 	c.Decrypt(dst, ct)
 	assert.EqualValues(t, pt, dst)
+}
+
+var gc cipher.Block
+
+func BenchmarkNewCipher(b *testing.B) {
+	var c cipher.Block
+
+	for n := 0; n < b.N; n++ {
+		c, _ = NewCipher("PLAYFAIREXAMPLE")
+	}
+	gc = c
 }
 
 func BenchmarkCipher_Encrypt(b *testing.B) {
