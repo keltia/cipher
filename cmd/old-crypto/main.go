@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"github.com/keltia/cipher"
 	"github.com/keltia/cipher/caesar"
 	"github.com/keltia/cipher/playfair"
-	"github.com/keltia/cipher"
 )
 
 var (
@@ -19,27 +19,28 @@ func init() {
 
 func main() {
 	var plain = []byte("ABCDE")
-	var cipher = make([]byte, len(plain))
+
+	var ncipher []byte
 
 	flag.Parse()
 
 	fmt.Println("test starting.")
-	cipher = make([]byte, len(plain))
+	ncipher = make([]byte, len(plain))
 
 	var mycipher = []byte("DEFGH")
 
 	fmt.Printf("pt=%s\n", string(plain))
 
 	c, _ := caesar.NewCipher(3)
-	c.Encrypt(cipher, plain)
-	if !bytes.Equal(mycipher, cipher) {
-		fmt.Printf("cipher: %s real: %s\n", string(mycipher), string(cipher))
+	c.Encrypt(ncipher, plain)
+	if !bytes.Equal(mycipher, ncipher) {
+		fmt.Printf("ncipher: %s real: %s\n", string(mycipher), string(ncipher))
 	}
-	fmt.Printf("ct=%s\n", string(cipher))
+	fmt.Printf("ct=%s\n", string(ncipher))
 
 	myplain := make([]byte, len(plain))
 
-	c.Decrypt(myplain, cipher)
+	c.Decrypt(myplain, ncipher)
 	if !bytes.Equal(myplain, plain) {
 		fmt.Printf("plain: %s real: %s\n", string(myplain), string(plain))
 	}
@@ -50,21 +51,21 @@ func main() {
 	plain = crypto.Expand(plain)
 
 	mycipher = []byte("BMODZBXDNABEKUDMUIXMMOUVIF")
-	cipher = make([]byte, len(plain))
+	ncipher = make([]byte, len(plain))
 
 	fmt.Printf("pt=%s\n", string(plain))
 
 	c, _ = playfair.NewCipher("PLAYFAIREXAMPLE")
 
-	c.Encrypt(cipher, plain)
-	if !bytes.Equal(mycipher, cipher) {
-		fmt.Printf("cipher: %s real: %s\n", string(mycipher), string(cipher))
+	c.Encrypt(ncipher, plain)
+	if !bytes.Equal(mycipher, ncipher) {
+		fmt.Printf("ncipher: %s real: %s\n", string(mycipher), string(ncipher))
 	}
-	fmt.Printf("ct=%s\n", string(cipher))
+	fmt.Printf("ct=%s\n", string(ncipher))
 
 	myplain = make([]byte, len(plain))
 
-	c.Decrypt(myplain, cipher)
+	c.Decrypt(myplain, ncipher)
 	if !bytes.Equal(myplain, plain) {
 		fmt.Printf("plain: %s real: %s\n", string(myplain), string(plain))
 	}
