@@ -26,6 +26,18 @@ func TestCondense1(t *testing.T) {
 	}
 }
 
+func TestCondense2(t *testing.T) {
+	for _, td := range testCondensedData {
+		assert.Equal(t, td.b, Condense2(td.a))
+	}
+}
+
+func TestCondense3(t *testing.T) {
+	for _, td := range testCondensedData {
+		assert.Equal(t, td.b, Condense3(td.a))
+	}
+}
+
 var bar string
 
 func BenchmarkCondense(b *testing.B) {
