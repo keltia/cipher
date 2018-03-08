@@ -38,6 +38,18 @@ func TestCondense3(t *testing.T) {
 	}
 }
 
+func TestCondense4(t *testing.T) {
+	for _, td := range testCondensedData {
+		assert.Equal(t, td.b, Condense4(td.a))
+	}
+}
+
+func TestCondense5(t *testing.T) {
+	for _, td := range testCondensedData {
+		assert.Equal(t, td.b, Condense5(td.a))
+	}
+}
+
 var bar string
 
 func BenchmarkCondense(b *testing.B) {
@@ -79,6 +91,28 @@ func BenchmarkCondense3(b *testing.B) {
 	for _, td := range testCondensedData {
 		for n := 0; n < b.N; n++ {
 			r = Condense3(td.a)
+		}
+	}
+	bar = r
+}
+
+func BenchmarkCondense4(b *testing.B) {
+	var r string
+
+	for _, td := range testCondensedData {
+		for n := 0; n < b.N; n++ {
+			r = Condense4(td.a)
+		}
+	}
+	bar = r
+}
+
+func BenchmarkCondense5(b *testing.B) {
+	var r string
+
+	for _, td := range testCondensedData {
+		for n := 0; n < b.N; n++ {
+			r = Condense5(td.a)
 		}
 	}
 	bar = r

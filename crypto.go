@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"bytes"
 	"strings"
 )
 
@@ -50,6 +51,31 @@ func Condense(str string) string {
 
 	for _, ch := range str {
 		if !strings.Contains(condensed.String(), string(ch)) {
+			condensed.WriteByte(byte(ch))
+		}
+	}
+	return condensed.String()
+}
+
+// Condense is ported from Ruby
+func Condense4(str string) string {
+	var condensed bytes.Buffer
+
+	for _, ch := range str {
+		if !bytes.Contains(condensed.Bytes(), []byte{byte(ch)}) {
+			condensed.WriteByte(byte(ch))
+		}
+	}
+	return condensed.String()
+}
+
+// Condense is ported from Ruby
+func Condense5(str string) string {
+	var condensed bytes.Buffer
+	var bstr = bytes.NewBufferString(str).Bytes()
+
+	for _, ch := range bstr {
+		if !bytes.Contains(condensed.Bytes(), []byte{byte(ch)}) {
 			condensed.WriteByte(byte(ch))
 		}
 	}
