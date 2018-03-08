@@ -24,6 +24,7 @@ It currently implement a few of the Ruby code, namely:
 - null
 - Caesar (you can choose the shift number)
 - Playfair
+- Chaocipher
 
 It does not try to reinvent the wheel and implements the `cipher.Block` interface defined in the Go standard library (see `src/crypto/cipher/cipher.go`).
 
