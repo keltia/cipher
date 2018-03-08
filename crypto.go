@@ -31,6 +31,31 @@ func Condense1(str string) string {
 	return r
 }
 
+// Condense1 is an alternate version using a map to weed out dup letters
+func Condense2(str string) string {
+	var s = make(map[rune]bool)
+	var r strings.Builder
+
+	for _, ch := range str {
+		if _, ok := s[ch]; !ok {
+			r.WriteByte(byte(ch))
+			s[ch] = true
+		}
+	}
+	return r.String()
+}
+
+func Condense3(str string) string {
+	var condensed strings.Builder
+
+	for _, ch := range str {
+		if !strings.Contains(condensed.String(), string(ch)) {
+			condensed.WriteByte(byte(ch))
+		}
+	}
+	return condensed.String()
+}
+
 // insert one character inside the array
 func insert(src []byte, obj byte, ind int) []byte {
 	dst := make([]byte, 2*len(src))
