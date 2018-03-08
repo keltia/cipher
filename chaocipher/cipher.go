@@ -16,6 +16,7 @@ type chaocipher struct {
 	pw, cw []byte
 }
 
+// NewCipher creates a new cipher with the provided keys
 func NewCipher(pkey, ckey string) (cipher.Block, error) {
 	if len(pkey) != len(alphabet) ||
 		len(ckey) != len(alphabet) {
