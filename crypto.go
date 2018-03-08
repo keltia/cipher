@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-// Condense is ported from Ruby
-func Condense(str string) string {
+// Condense3 is ported from Ruby
+func Condense3(str string) string {
 	var condensed []byte
 
 	for _, ch := range str {
@@ -31,7 +31,7 @@ func Condense1(str string) string {
 	return r
 }
 
-// Condense1 is an alternate version using a map to weed out dup letters
+// Condense2 is an alternate version using a map to weed out dup letters
 func Condense2(str string) string {
 	var s = make(map[rune]bool)
 	var r strings.Builder
@@ -45,7 +45,8 @@ func Condense2(str string) string {
 	return r.String()
 }
 
-func Condense3(str string) string {
+// Condense is ported from Ruby
+func Condense(str string) string {
 	var condensed strings.Builder
 
 	for _, ch := range str {
