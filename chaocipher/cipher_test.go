@@ -37,6 +37,18 @@ func TestAdvance(t *testing.T) {
 	assert.EqualValues(t, exppw, cc.pw)
 }
 
+func BenchmarkAdvance(b *testing.B) {
+	c, _ := NewCipher(keyPlain, keyCipher)
+
+	cc := c.(*chaocipher)
+	idx := bytes.Index([]byte(keyPlain), []byte{'A'})
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		cc.advance(idx)
+	}
+}
+
 func TestAdvanceReal(t *testing.T) {
 	c, _ := NewCipher(keyPlain, keyCipher)
 
@@ -175,6 +187,20 @@ func TestEncode(t *testing.T) {
 	assert.EqualValues(t, final, cc.cw)
 }
 
+var gcw byte
+
+func BenchmarkEncode(b *testing.B) {
+	var cw byte
+	c, _ := NewCipher(keyPlain, keyCipher)
+
+	cc := c.(*chaocipher)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		cw = cc.encode(byte('A'))
+	}
+	gcw = cw
+}
+
 func TestEncode1(t *testing.T) {
 	c, err := NewCipher(keyPlain, keyCipher)
 
@@ -210,6 +236,18 @@ func TestDecode(t *testing.T) {
 	final = bytes.NewBufferString("PFJRIGTWOBNYQEHXUCZVAMDSLK").Bytes()
 	assert.EqualValues(t, final, cc.cw)
 
+}
+
+func BenchmarkDecode(b *testing.B) {
+	var pw byte
+	c, _ := NewCipher(keyPlain, keyCipher)
+
+	cc := c.(*chaocipher)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		pw = cc.decode(byte('P'))
+	}
+	gcw = pw
 }
 
 func TestNewCipher(t *testing.T) {
