@@ -10,7 +10,8 @@ EXE=	${BIN}.exe
 
 SRCS= caesar/cipher.go		crypto.go			null/cipher_test.go \
       caesar/cipher_test.go		crypto_test.go			playfair/cipher.go \
-      cmd/old-crypto/main.go		null/cipher.go			playfair/cipher_test.go
+      cmd/old-crypto/main.go		null/cipher.go			playfair/cipher_test.go \
+      chaocipher/cipher.go chaocipher/cipher_test.go
 
 OPTS=	-ldflags="-s -w" -v
 
