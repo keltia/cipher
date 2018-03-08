@@ -50,6 +50,28 @@ func BenchmarkCondense1(b *testing.B) {
 	bar = r
 }
 
+func BenchmarkCondense2(b *testing.B) {
+	var r string
+
+	for _, td := range testCondensedData {
+		for n := 0; n < b.N; n++ {
+			r = Condense2(td.a)
+		}
+	}
+	bar = r
+}
+
+func BenchmarkCondense3(b *testing.B) {
+	var r string
+
+	for _, td := range testCondensedData {
+		for n := 0; n < b.N; n++ {
+			r = Condense3(td.a)
+		}
+	}
+	bar = r
+}
+
 var testExpandData = []struct{ a, b string }{
 	{"AAA", "AXAXA"},
 	{"AAAA", "AXAXAXA"},
