@@ -1,7 +1,6 @@
 package crypto
 
 import (
-	"log"
 	"strings"
 )
 
@@ -76,7 +75,6 @@ func ExpandBroken(src []byte) []byte {
 	for i = 1; i <= len(src)-1; {
 		if src[i] == dst[j] {
 			dst = append(dst, byte('X'))
-			//message("<i=%d j=%d dst=%s", i, j, dst)
 		} else {
 			dst = append(dst, src[i])
 			i++
@@ -88,18 +86,11 @@ func ExpandBroken(src []byte) []byte {
 
 // Expand is a port of the Ruby version.
 func Expand(src []byte) []byte {
-	//dst = append(dst, src[len(src) - 1])
 	for i := 0; i < len(src)-1; {
 		if src[i] == src[i+1] {
 			src = insert(src, 'X', i+1)
 		}
 		i += 2
 	}
-	//message("--->")
 	return src
-}
-
-// verbose displays only if fVerbose is set
-func message(str string, a ...interface{}) {
-	log.Printf(str, a...)
 }
