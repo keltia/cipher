@@ -45,7 +45,7 @@ func Condense2(str string) string {
 	return r.String()
 }
 
-// Condense is ported from Ruby
+// Condense limits allocation with a bytes.Builder
 func Condense(str string) string {
 	var condensed strings.Builder
 
@@ -57,7 +57,7 @@ func Condense(str string) string {
 	return condensed.String()
 }
 
-// Condense is ported from Ruby
+// Condense4 assembles the string within a byte buffer
 func Condense4(str string) string {
 	var condensed bytes.Buffer
 
@@ -69,7 +69,7 @@ func Condense4(str string) string {
 	return condensed.String()
 }
 
-// Condense is ported from Ruby
+// Condense5 is like Condense but work on the string as a bytes.Buffer
 func Condense5(str string) string {
 	var condensed bytes.Buffer
 	var bstr = bytes.NewBufferString(str).Bytes()
