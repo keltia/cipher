@@ -156,6 +156,74 @@ func TestInsert(t *testing.T) {
 	assert.EqualValues(t, b, insert(a, 42, 2))
 }
 
+func TestShuffle(t *testing.T) {
+	key := "ARABESQUE"
+	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ/-"
+
+	res := Shuffle(key, alphabet)
+	assert.Equal(t, "ACKVRDLWBFMXEGNYSHOZQIP/UJT-", res)
+}
+
+func TestShuffleOdd(t *testing.T) {
+	key := "SUBWAY"
+	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ/-"
+
+	res := Shuffle(key, alphabet)
+	assert.Equal(t, "SCIOXUDJPZBEKQ/WFLR-AGMTYHNV", res)
+}
+
+func TestShuffleOdd1(t *testing.T) {
+	key := "SUBWAY"
+	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ/-"
+
+	res := Shuffle1(key, alphabet)
+	assert.Equal(t, "SCIOXUDJPZBEKQ/WFLR-AGMTYHNV", res)
+}
+
+func TestShuffleOdd2(t *testing.T) {
+	key := "SUBWAY"
+	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ/-"
+
+	res := Shuffle2(key, alphabet)
+	assert.Equal(t, "SCIOXUDJPZBEKQ/WFLR-AGMTYHNV", res)
+}
+
+func BenchmarkShuffle(b *testing.B) {
+	var res string
+
+	key := "SUBWAY"
+	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ/-"
+
+	for n := 0; n < b.N; n++ {
+		res = Shuffle(key, alphabet)
+	}
+	bar = res
+}
+
+func BenchmarkShuffle1(b *testing.B) {
+	var res string
+
+	key := "SUBWAY"
+	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ/-"
+
+	for n := 0; n < b.N; n++ {
+		res = Shuffle1(key, alphabet)
+	}
+	bar = res
+}
+
+func BenchmarkShuffle2(b *testing.B) {
+	var res string
+
+	key := "SUBWAY"
+	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ/-"
+
+	for n := 0; n < b.N; n++ {
+		res = Shuffle2(key, alphabet)
+	}
+	bar = res
+}
+
 var foo []byte
 
 func BenchmarkExpand(b *testing.B) {

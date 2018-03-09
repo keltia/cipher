@@ -120,3 +120,131 @@ func Expand(src []byte) []byte {
 	}
 	return src
 }
+
+/*
+  # Form an alphabet formed with a keyword, re-shuffle everything to
+  # make it less predictable (i.e. checkerboard effect)
+  #
+  # Shuffle the alphabet a bit to avoid sequential allocation of the
+  # code numbers.  This is actually performing a transposition with the word
+  # itself as key.
+  #
+  # Regular rectangle
+  # -----------------
+  # Key is ARABESQUE condensed into ARBESQU (len = 7) (height = 4)
+  # Let word be ARBESQUCDFGHIJKLMNOPTVWXYZ/-
+  #
+  # First passes will generate
+  #
+  # A  RBESQUCDFGHIJKLMNOPTVWXYZ/-   c=0  0 x 6
+  # AC  RBESQUDFGHIJKLMNOPTVWXYZ/-   c=6  1 x 6
+  # ACK  RBESQUDFGHIJLMNOPTVWXYZ/-   c=12 2 x 6
+  # ACKV  RBESQUDFGHIJLMNOPTWXYZ/-   c=18 3 x 6
+  # ACKVR  BESQUDFGHIJLMNOPTWXYZ/-   c=0  0 x 5
+  # ACKVRD  BESQUFGHIJLMNOPTWXYZ/-   c=5  1 x 5
+  # ...
+  # ACKVRDLWBFMXEGNYSHOZQIP/UJT-
+  #
+  # Irregular rectangle
+  # -------------------
+  # Key is SUBWAY condensed info SUBWAY (len = 6) (height = 5)
+  #
+  # S  UBWAYCDEFGHIJKLMNOPQRTVXZ/-   c=0  0 x 5
+  # SC  UBWAYDEFGHIJKLMNOPQRTVXZ/-   c=5  1 x 5
+  # SCI  UBWAYDEFGHJKLMNOPQRTVXZ/-   c=10 2 x 5
+  # SCIO  UBWAYDEFGHJKLMNPQRTVXZ/-   c=15 3 x 5
+  # SCIOX  UBWAYDEFGHJKLMNPQRTVZ/-   c=20 4 x 5
+  # SCIOXU  BWAYDEFGHJKLMNPQRTVZ/-   c=0  0 x 4
+  # ...
+  # SCIOXUDJPZBEKQ/WFLR-AG  YHMNTV   c=1  1 x 1
+  # SCIOXUDJPZBEKQ/WFLR-AGM  YHNTV   c=2  2 x 1
+  # SCIOXUDJPZBEKQ/WFLR-AGMT  YHNV   c=3  3 x 1
+  # SCIOXUDJPZBEKQ/WFLR-AGMTYHNV
+*/
+// Shuffle takes a word & alphabet and mixes them around - use strings.Builder
+func Shuffle(key, alphabet string) string {
+	word := bytes.NewBufferString(Condense(key + alphabet)).Bytes()
+	length := len(Condense(key))
+
+	height := len(alphabet) / length
+	if (len(alphabet) % length) != 0 {
+		height++
+	}
+	res := strings.Builder{}
+	for i := length - 1; i >= 0; i-- {
+		for j := 0; j <= height; j++ {
+			if len(word) <= height-1 {
+				res.Write(word)
+				return res.String()
+			} else {
+				if i*j < len(word) {
+					c := word[i*j]
+					word = append(word[0:i*j], word[i*j+1:]...)
+					res.WriteByte(c)
+				}
+			}
+		}
+	}
+	return res.String()
+}
+
+// Shuffle takes a word & alphabet and mixes them around - word is a string
+func Shuffle1(key, alphabet string) string {
+	word := Condense(key + alphabet)
+	length := len(Condense(key))
+
+	height := len(alphabet) / length
+	if (len(alphabet) % length) != 0 {
+		height++
+	}
+	res := strings.Builder{}
+	for i := length - 1; i >= 0; i-- {
+		for j := 0; j <= height; j++ {
+			if len(word) <= height-1 {
+				res.WriteString(word)
+				return res.String()
+			} else {
+				if i*j < len(word) {
+					c := word[i*j]
+					word = word[0:i*j] + word[i*j+1:]
+					res.WriteByte(c)
+				}
+			}
+		}
+	}
+	return res.String()
+}
+
+// Shuffle takes a word & alphabet and mixes them around - full string incl. res
+func Shuffle2(key, alphabet string) string {
+	word := Condense(key + alphabet)
+	length := len(Condense(key))
+
+	height := len(alphabet) / length
+	if (len(alphabet) % length) != 0 {
+		height++
+	}
+	res := ""
+	for i := length - 1; i >= 0; i-- {
+		for j := 0; j <= height; j++ {
+			if len(word) <= height-1 {
+				res = res + word
+				return res
+			} else {
+				if i*j < len(word) {
+					c := word[i*j]
+					word = word[0:i*j] + word[i*j+1:]
+					res = res + string(c)
+				}
+			}
+		}
+	}
+	return res
+}
+
+/*
+// verbose displays only if fVerbose is set
+func message(str string, a ...interface{}) {
+	log.Printf(str, a...)
+}
+*/
