@@ -243,7 +243,7 @@ func Shuffle2(key, alphabet string) string {
 	return res
 }
 
-func dup(a []byte) []byte {
+func Dup(a []byte) []byte {
 	b := make([]byte, len(a))
 	copy(b, a)
 	return b
@@ -251,7 +251,7 @@ func dup(a []byte) []byte {
 
 func ToNumeric(key string) []byte {
 	letters := bytes.NewBufferString(key).Bytes()
-	sorted := dup(letters)
+	sorted := Dup(letters)
 	sort.Slice(sorted, func(i, j int) bool { return sorted[i] < sorted[j] })
 
 	f := func(c rune) rune {
