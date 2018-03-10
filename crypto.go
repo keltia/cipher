@@ -2,6 +2,7 @@ package crypto
 
 import (
 	"bytes"
+	"sort"
 	"strings"
 )
 
@@ -240,6 +241,26 @@ func Shuffle2(key, alphabet string) string {
 		}
 	}
 	return res
+}
+
+func dup(a []byte) []byte {
+	b := make([]byte, len(a))
+	copy(b, a)
+	return b
+}
+
+func ToNumeric(key string) []byte {
+	letters := bytes.NewBufferString(key).Bytes()
+	sorted := dup(letters)
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i] < sorted[j] })
+
+	f := func(c rune) rune {
+		k := bytes.Index(sorted, []byte{byte(c)})
+		sorted[k] = 0
+		return rune(k)
+	}
+	ar := bytes.Map(f, letters)
+	return ar
 }
 
 /*

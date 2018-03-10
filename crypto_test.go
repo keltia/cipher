@@ -188,6 +188,25 @@ func TestShuffleOdd2(t *testing.T) {
 	assert.Equal(t, "SCIOXUDJPZBEKQ/WFLR-AGMTYHNV", res)
 }
 
+var NumericData = []struct {
+	str string
+	key []byte
+}{
+	{"ARABESQUE", []byte{0, 6, 1, 2, 3, 7, 5, 8, 4}},
+	{"PJRJJJJJJS", []byte{7, 0, 8, 1, 2, 3, 4, 5, 6, 9}},
+	{"AAABRAACADAABRA", []byte{0, 1, 2, 9, 13, 3, 4, 11, 5, 12, 6, 7, 10, 14, 8}},
+}
+
+func TestToNumeric(t *testing.T) {
+	for _, data := range NumericData {
+		str := data.str
+		key := ToNumeric(str)
+		assert.EqualValues(t, data.key, key)
+	}
+}
+
+// -- benchmarks
+
 func BenchmarkShuffle(b *testing.B) {
 	var res string
 
@@ -246,4 +265,18 @@ func BenchmarkExpandInsert(b *testing.B) {
 		}
 	}
 	foo = r
+}
+
+var gres []byte
+
+func BenchmarkToNumeric(b *testing.B) {
+	var res []byte
+
+	str := "ANTICONSTITUTIONNELLEMENT"
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		res = ToNumeric(str)
+	}
+	gres = res
 }
