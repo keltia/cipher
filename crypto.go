@@ -47,7 +47,7 @@ func Condense2(str string) string {
 }
 
 // Condense limits allocation with a bytes.Builder
-func Condense(str string) string {
+func Condense4(str string) string {
 	var condensed strings.Builder
 
 	for _, ch := range str {
@@ -59,7 +59,7 @@ func Condense(str string) string {
 }
 
 // Condense4 assembles the string within a byte buffer
-func Condense4(str string) string {
+func Condense(str string) string {
 	var condensed bytes.Buffer
 
 	for _, ch := range str {
