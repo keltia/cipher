@@ -1,6 +1,4 @@
-# cipher
-
-* Old paper & pencil ciphers in Go. *
+# cipher — Old paper & pencil ciphers in Go.
 
 [![godoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/keltia/cipher) [![license](https://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/keltia/cipher/master/LICENSE) [![build](https://img.shields.io/travis/keltia/cipher.svg?style=flat)](https://travis-ci.org/keltia/cipher) [![Go Report Card](https://goreportcard.com/badge/github.com/keltia/cipher)](https://goreportcard.com/report/github.com/keltia/cipher)
 
@@ -25,9 +23,11 @@ It currently implement a few of the Ruby code, namely:
 - Caesar (you can choose the shift number)
 - Playfair
 - Chaocipher
-- Simple transposition
+- Simple transposition (can be used with other ciphers as super-encipherement)
 
 It does not try to reinvent the wheel and implements the `cipher.Block` interface defined in the Go standard library (see `src/crypto/cipher/cipher.go`).
+
+That means that all ciphers have `BlockSize(), Encrypt() & Decrypt()`.  You can create one with `NewCipher()` then use `Encrypt()`/`Decrypt`.  `BlockSize()` is of course implemented as well otherwise the interface would not be matched. 
 
 ## Installation
 
@@ -47,6 +47,10 @@ To run the tests, you will need:
 - `github.com/stretchr/assert`
 
 NOTE: please use and test the Windows version (use `make windows`to generate it).  It should work but I lack resources to play much with it.
+
+## Benchmarks
+
+I tried to provide benchmarks for all ciphers (including key scheduling/expansion) and in some cases several implementations (and associated benchamarks).
 
 ## TODO
 
