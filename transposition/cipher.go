@@ -3,6 +3,7 @@ package transposition
 import (
 	"bytes"
 	"crypto/cipher"
+	"fmt"
 	"github.com/keltia/cipher"
 	"log"
 )
@@ -13,6 +14,10 @@ type transp struct {
 }
 
 func NewCipher(key string) (cipher.Block, error) {
+	if key == "" {
+		return &transp{}, fmt.Errorf("key can not be empty")
+	}
+
 	c := &transp{
 		key:  key,
 		tkey: crypto.ToNumeric(key),

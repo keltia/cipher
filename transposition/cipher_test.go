@@ -12,11 +12,19 @@ func TestNewCipher(t *testing.T) {
 
 	assert.NotNil(t, c)
 	assert.NoError(t, err)
+	assert.Implements(t, (*cipher.Block)(nil), c)
 
 	cc := c.(*transp)
 
 	assert.Equal(t, "ABCDE", cc.key)
 	assert.EqualValues(t, []byte{0, 1, 2, 3, 4}, cc.tkey)
+}
+
+func TestNewCipher2(t *testing.T) {
+	c, err := NewCipher("")
+
+	assert.Empty(t, c)
+	assert.Error(t, err)
 }
 
 func TestTransp_BlockSize(t *testing.T) {
