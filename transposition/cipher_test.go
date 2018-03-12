@@ -21,9 +21,8 @@ func TestNewCipher(t *testing.T) {
 }
 
 func TestNewCipher2(t *testing.T) {
-	c, err := NewCipher("")
+	_, err := NewCipher("")
 
-	assert.Empty(t, c)
 	assert.Error(t, err)
 }
 
