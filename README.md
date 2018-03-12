@@ -24,6 +24,7 @@ It currently implement a few of the Ruby code, namely:
 - Playfair
 - Chaocipher
 - Simple transposition (can be used with other ciphers as super-encipherement)
+- Polybius square bigrammatic cipher (for ADFGVX = polybius + transposition)
 
 It does not try to reinvent the wheel and implements the `cipher.Block` interface defined in the Go standard library (see `src/crypto/cipher/cipher.go`).
 
