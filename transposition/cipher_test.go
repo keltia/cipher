@@ -147,6 +147,8 @@ func BenchmarkTransp_Encrypt(b *testing.B) {
 
 	c, _ := NewCipher(key)
 	dst := make([]byte, pt.Len())
+
+	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		c.Encrypt(dst, pt.Bytes())
 	}
@@ -155,8 +157,11 @@ func BenchmarkTransp_Encrypt(b *testing.B) {
 func BenchmarkTransp_Decrypt(b *testing.B) {
 	ct := bytes.NewBufferString("AATNIITN2MIHAAXOOTCT2RNXDNENNAOXMB2TW4DTGKP3ES1TISUY3")
 	key := "ARABESQUE"
+
 	c, _ := NewCipher(key)
 	dst := make([]byte, ct.Len())
+
+	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		c.Encrypt(dst, ct.Bytes())
 	}
