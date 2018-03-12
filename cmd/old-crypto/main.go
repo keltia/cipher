@@ -1,12 +1,16 @@
 package main
 
 import (
-	"bytes"
+	"crypto/cipher"
 	"flag"
 	"fmt"
 	"github.com/keltia/cipher"
+	"github.com/keltia/cipher/adfgvx"
 	"github.com/keltia/cipher/caesar"
+	"github.com/keltia/cipher/chaocipher"
 	"github.com/keltia/cipher/playfair"
+	"github.com/keltia/cipher/square"
+	"github.com/keltia/cipher/transposition"
 )
 
 var (
@@ -17,56 +21,52 @@ func init() {
 	flag.BoolVar(&fDebug, "D", false, "debug mode.")
 }
 
+const (
+	keyPlain  = "PTLNBQDEOYSFAVZKGJRIHWXUMC"
+	keyCipher = "HXUCZVAMDSLKPEFJRIGTWOBNYQ"
+
+	plain = "IFYOUCANREADTHISYOUEITHERDOWNLOADEDMYOWNIMPLEMENTATIONOFCHAOCIPHERORYOUWROTEONEOFYOUROWNINEITHERCASELETMEKNOWANDACCEPTMYCONGRATULATIONSX"
+)
+
+var allciphers []CPH
+
+type CPH struct {
+	name string
+	c    cipher.Block
+	size int
+}
+
+func init() {
+	var c cipher.Block
+
+	c, _ = caesar.NewCipher(3)
+	allciphers = append(allciphers, CPH{"Caesar", c, len(plain)})
+
+	c, _ = square.NewCipher("ARABESQUE", "012345")
+	allciphers = append(allciphers, CPH{"Square", c, len(plain) * 2})
+
+	c, _ = transposition.NewCipher("SUBWAY")
+	allciphers = append(allciphers, CPH{"Transp", c, len(plain)})
+
+	c, _ = chaocipher.NewCipher(keyPlain, keyCipher)
+	allciphers = append(allciphers, CPH{"Chaocipher", c, len(plain)})
+
+	c, _ = playfair.NewCipher("ARABESQUE")
+	allciphers = append(allciphers, CPH{"Playfair", c, len(plain)})
+
+	c, _ = adfgvx.NewCipher("ARABESQUE", "SUBWAY")
+	allciphers = append(allciphers, CPH{"ADFGVX", c, len(plain) * 2})
+}
+
 func main() {
-	var plain = []byte("ABCDE")
 
-	var ncipher []byte
+	fmt.Printf("==> Plain = \n%s\n", plain)
+	for _, cp := range allciphers {
+		dst := make([]byte, cp.size)
 
-	flag.Parse()
-
-	fmt.Println("test starting.")
-	ncipher = make([]byte, len(plain))
-
-	var mycipher = []byte("DEFGH")
-
-	fmt.Printf("pt=%s\n", string(plain))
-
-	c, _ := caesar.NewCipher(3)
-	c.Encrypt(ncipher, plain)
-	if !bytes.Equal(mycipher, ncipher) {
-		fmt.Printf("ncipher: %s real: %s\n", string(mycipher), string(ncipher))
-	}
-	fmt.Printf("ct=%s\n", string(ncipher))
-
-	myplain := make([]byte, len(plain))
-
-	c.Decrypt(myplain, ncipher)
-	if !bytes.Equal(myplain, plain) {
-		fmt.Printf("plain: %s real: %s\n", string(myplain), string(plain))
-	}
-
-	fmt.Println("-----------------")
-
-	plain = []byte("HIDETHEGOLDINTHETREESTUMP")
-	plain = crypto.Expand(plain)
-
-	mycipher = []byte("BMODZBXDNABEKUDMUIXMMOUVIF")
-	ncipher = make([]byte, len(plain))
-
-	fmt.Printf("pt=%s\n", string(plain))
-
-	c, _ = playfair.NewCipher("PLAYFAIREXAMPLE")
-
-	c.Encrypt(ncipher, plain)
-	if !bytes.Equal(mycipher, ncipher) {
-		fmt.Printf("ncipher: %s real: %s\n", string(mycipher), string(ncipher))
-	}
-	fmt.Printf("ct=%s\n", string(ncipher))
-
-	myplain = make([]byte, len(plain))
-
-	c.Decrypt(myplain, ncipher)
-	if !bytes.Equal(myplain, plain) {
-		fmt.Printf("plain: %s real: %s\n", string(myplain), string(plain))
+		c := cp.c
+		c.Encrypt(dst, []byte(plain))
+		fmt.Println("==> ", cp.name)
+		fmt.Printf("%s\n", crypto.ByN(string(dst), 5))
 	}
 }
