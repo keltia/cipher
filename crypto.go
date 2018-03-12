@@ -2,6 +2,8 @@ package crypto
 
 import (
 	"bytes"
+	"io"
+	"log"
 	"sort"
 	"strings"
 )
@@ -263,9 +265,48 @@ func ToNumeric(key string) []byte {
 	return ar
 }
 
-/*
+func ByN(ct string, n int) string {
+	var err error
+	var out bytes.Buffer
+
+	in := make([]byte, n)
+	blank := strings.Repeat(" ", n)
+	buf := bytes.NewBufferString(ct)
+
+	for {
+		if n, err = buf.Read(in); err == io.EOF {
+			break
+		}
+
+		out.WriteString(string(in))
+		out.WriteByte(byte(' '))
+		copy(in, blank)
+	}
+	return strings.TrimRight(out.String(), " ")
+}
+
+func ByN1(ct string, n int) string {
+	var err error
+	var out strings.Builder
+
+	in := make([]byte, n)
+	blank := strings.Repeat(" ", n)
+	buf := bytes.NewBufferString(ct)
+
+	for {
+		if n, err = buf.Read(in); err == io.EOF {
+			break
+		}
+
+		out.Write(in)
+		out.WriteByte(byte(' '))
+		copy(in, blank)
+	}
+	// Skip the last space
+	return strings.TrimRight(out.String(), " ")
+}
+
 // verbose displays only if fVerbose is set
 func message(str string, a ...interface{}) {
 	log.Printf(str, a...)
 }
-*/

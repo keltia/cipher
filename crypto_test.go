@@ -205,6 +205,28 @@ func TestToNumeric(t *testing.T) {
 	}
 }
 
+var ByNData = []struct {
+	n   int
+	in  string
+	out string
+}{
+	{5, "ARABESQUE", "ARABE SQUE"},
+	{4, "PJRJJJJJJS", "PJRJ JJJJ JS"},
+	{5, "AAABRAACADAABRA", "AAABR AACAD AABRA"},
+}
+
+func TestByN(t *testing.T) {
+	for _, cp := range ByNData {
+		assert.Equal(t, cp.out, ByN(cp.in, cp.n))
+	}
+}
+
+func TestByN1(t *testing.T) {
+	for _, cp := range ByNData {
+		assert.Equal(t, cp.out, ByN1(cp.in, cp.n))
+	}
+}
+
 // -- benchmarks
 
 func BenchmarkShuffle(b *testing.B) {
@@ -279,4 +301,30 @@ func BenchmarkToNumeric(b *testing.B) {
 		res = ToNumeric(str)
 	}
 	gres = res
+}
+
+var gs string
+
+func BenchmarkByN(b *testing.B) {
+	var s string
+
+	str := "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456"
+	nb := 5
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		s = ByN(str, nb)
+	}
+	gs = s
+}
+
+func BenchmarkByN1(b *testing.B) {
+	var s string
+
+	str := "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456"
+	nb := 5
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		s = ByN1(str, nb)
+	}
+	gs = s
 }
