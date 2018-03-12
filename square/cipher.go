@@ -3,6 +3,7 @@ package square
 import (
 	"bytes"
 	"crypto/cipher"
+	"fmt"
 	"github.com/keltia/cipher"
 )
 
@@ -20,6 +21,10 @@ type squarecipher struct {
 
 func NewCipher(key string, chrs string) (cipher.Block, error) {
 	alpha := bytes.NewBufferString(crypto.Condense(key + Base36)).Bytes()
+
+	if key == "" || chrs == "" {
+		return &squarecipher{}, fmt.Errorf("neither key nor chrs can be empty")
+	}
 
 	c := &squarecipher{
 		key:   key,
