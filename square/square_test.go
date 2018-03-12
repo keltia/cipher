@@ -253,6 +253,20 @@ func TestNewCipher(t *testing.T) {
 	}
 }
 
+func TestNewCipher2(t *testing.T) {
+	c, err := NewCipher("", "012345")
+
+	assert.Empty(t, c)
+	assert.Error(t, err)
+}
+
+func TestNewCipher3(t *testing.T) {
+	c, err := NewCipher("SUBWAY", "")
+
+	assert.Empty(t, c)
+	assert.Error(t, err)
+}
+
 func TestSquarecipher_BlockSize(t *testing.T) {
 	for _, cp := range TestSQData {
 		c, err := NewCipher(cp.key, cp.chrs)
