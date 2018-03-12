@@ -98,6 +98,29 @@ func TestTransp_Decrypt(t *testing.T) {
 
 }
 
+func TestTransp_Decrypt1(t *testing.T) {
+	pt := bytes.NewBufferString("AVAGAGAVDFFGAVAGDGAVGVFX")
+
+	cts := []struct{ k, c string }{
+		{"SUBWAY", "AFDFADAGAAAAVVVVGFGVGGGX"},
+	}
+
+	for _, cti := range cts {
+		ct := bytes.NewBufferString(cti.c)
+		key := cti.k
+
+		c, err := NewCipher(key)
+		assert.NotNil(t, c)
+		assert.NoError(t, err)
+
+		dst := make([]byte, pt.Len())
+		c.Decrypt(dst, ct.Bytes())
+
+		assert.EqualValues(t, pt.Bytes(), dst)
+	}
+
+}
+
 // ----- benchmark
 
 var gc cipher.Block
