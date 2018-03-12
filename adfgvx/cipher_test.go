@@ -25,6 +25,20 @@ func TestNewCipher(t *testing.T) {
 	}
 }
 
+func TestNewCipher2(t *testing.T) {
+	c, err := NewCipher("PORTABLE", "")
+
+	assert.Empty(t, c)
+	assert.Error(t, err)
+}
+
+func TestNewCipher3(t *testing.T) {
+	c, err := NewCipher("", "SUBWAY")
+
+	assert.Empty(t, c)
+	assert.Error(t, err)
+}
+
 func TestAdfgvxcipher_BlockSize(t *testing.T) {
 	for _, cp := range TestADFGVXData {
 		c, err := NewCipher(cp.key1, cp.key2)
