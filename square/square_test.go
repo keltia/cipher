@@ -250,6 +250,7 @@ func TestNewCipher(t *testing.T) {
 
 		assert.NotNil(t, c)
 		assert.NoError(t, err)
+		assert.Implements(t, (*cipher.Block)(nil), c)
 	}
 }
 

@@ -16,8 +16,18 @@ var encryptCaesarTests = []NullTest{
 }
 
 func TestNewCipher(t *testing.T) {
-	c, _ := NewCipher()
+	c, err := NewCipher()
+
 	assert.NotNil(t, c)
+	assert.NoError(t, err)
+	assert.Implements(t, (*cipher.Block)(nil), c)
+}
+
+func TestNullCipher_BlockSize(t *testing.T) {
+	c, err := NewCipher()
+
+	assert.NotNil(t, c)
+	assert.NoError(t, err)
 	assert.EqualValues(t, 1, c.BlockSize())
 }
 

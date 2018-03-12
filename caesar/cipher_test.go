@@ -44,6 +44,16 @@ func TestExpandKey(t *testing.T) {
 
 func TestNewCipher(t *testing.T) {
 	for _, pair := range encryptCaesarTests {
+		c, err := NewCipher(pair.key)
+
+		assert.NotNil(t, c)
+		assert.NoError(t, err)
+		assert.Implements(t, (*cipher.Block)(nil), c)
+	}
+}
+
+func TestCaesarCipher_BlockSize(t *testing.T) {
+	for _, pair := range encryptCaesarTests {
 		c, _ := NewCipher(pair.key)
 
 		assert.EqualValues(t, 1, c.BlockSize())

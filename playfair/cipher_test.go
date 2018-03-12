@@ -11,6 +11,7 @@ func TestNewCipher(t *testing.T) {
 
 	assert.NotNil(t, c)
 	assert.NoError(t, err)
+	assert.Implements(t, (*cipher.Block)(nil), c)
 }
 
 func TestPlayfairCipher_BlockSize(t *testing.T) {
@@ -18,7 +19,6 @@ func TestPlayfairCipher_BlockSize(t *testing.T) {
 
 	assert.Equal(t, 2, c.BlockSize())
 	assert.NoError(t, err)
-
 }
 
 func TestPlayfairCipher_Encrypt(t *testing.T) {
