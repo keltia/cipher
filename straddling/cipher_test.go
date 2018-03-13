@@ -1,0 +1,225 @@
+package straddling
+
+import (
+	"bytes"
+	"crypto/cipher"
+	"github.com/stretchr/testify/assert"
+	"reflect"
+	"strings"
+	"testing"
+)
+
+func TestNewCipher(t *testing.T) {
+	c, err := NewCipher("ARABESQUE", "89")
+
+	assert.NotNil(t, c)
+	assert.NoError(t, err)
+	assert.Implements(t, (*cipher.Block)(nil), c)
+
+	cc := c.(*straddlingcheckerboard)
+	assert.Equal(t, "ACKVRDLWBFMXEGNYSHOZQIP/UJT-", cc.full)
+	assert.EqualValues(t, []byte{'0', '1', '2', '3', '4', '5', '6', '7'}, cc.shortc)
+	assert.EqualValues(t, []byte{'8', '9'}, cc.longc)
+}
+
+func TestNewCipher2(t *testing.T) {
+	c, err := NewCipher("ARABESQUE", "")
+
+	assert.Nil(t, c)
+	assert.Error(t, err)
+}
+
+func TestNewCipher3(t *testing.T) {
+	c, err := NewCipher("", "89")
+
+	assert.Nil(t, c)
+	assert.Error(t, err)
+}
+
+var TestExpandKeyData = []struct {
+	enc map[byte]string
+	dec map[string]byte
+}{
+	{map[byte]string{
+		byte('V'): "82",
+		byte('K'): "81",
+		byte('W'): "85",
+		byte('L'): "84",
+		byte('A'): "0",
+		byte('-'): "99",
+		byte('X'): "89",
+		byte('M'): "88",
+		byte('B'): "86",
+		byte('Y'): "91",
+		byte('N'): "3",
+		byte('C'): "80",
+		byte('/'): "97",
+		byte('Z'): "94",
+		byte('O'): "93",
+		byte('D'): "83",
+		byte('P'): "96",
+		byte('E'): "2",
+		byte('Q'): "95",
+		byte('F'): "87",
+		byte('G'): "90",
+		byte('R'): "1",
+		byte('H'): "92",
+		byte('S'): "4",
+		byte('T'): "7",
+		byte('I'): "5",
+		byte('J'): "98",
+		byte('U'): "6",
+	},
+		map[string]byte{
+			"5":  byte('I'),
+			"93": byte('O'),
+			"82": byte('V'),
+			"99": byte('-'),
+			"88": byte('M'),
+			"0":  byte('A'),
+			"6":  byte('U'),
+			"94": byte('Z'),
+			"83": byte('D'),
+			"89": byte('X'),
+			"1":  byte('R'),
+			"7":  byte('T'),
+			"95": byte('Q'),
+			"84": byte('L'),
+			"90": byte('G'),
+			"2":  byte('E'),
+			"96": byte('P'),
+			"85": byte('W'),
+			"91": byte('Y'),
+			"3":  byte('N'),
+			"80": byte('C'),
+			"97": byte('/'),
+			"86": byte('B'),
+			"92": byte('H'),
+			"4":  byte('S'),
+			"81": byte('K'),
+			"98": byte('J'),
+			"87": byte('F'),
+		}},
+}
+
+func TestExpandKey(t *testing.T) {
+	c, err := NewCipher("ARABESQUE", "89")
+
+	assert.NotNil(t, c)
+	assert.NoError(t, err)
+	assert.Implements(t, (*cipher.Block)(nil), c)
+
+	cc := c.(*straddlingcheckerboard)
+	cp := TestExpandKeyData[0]
+
+	if !reflect.DeepEqual(cp.enc, cc.enc) {
+		t.Errorf("%v is different from %v", cp.enc, cc.enc)
+	}
+	if !reflect.DeepEqual(cp.dec, cc.dec) {
+		t.Errorf("%v is different from %v", cp.dec, cc.dec)
+	}
+}
+
+func TestTimes10(t *testing.T) {
+	trente := times10('3')
+	assert.EqualValues(t, []string{"30", "31", "32", "33", "34", "35", "36", "37", "38", "39"}, trente)
+
+	dix := times10('1')
+	assert.EqualValues(t, []string{"10", "11", "12", "13", "14", "15", "16", "17", "18", "19"}, dix)
+}
+
+func TestExtract(t *testing.T) {
+	shortc := extract(allcipher, []byte{'2', '5'})
+	assert.EqualValues(t, []byte{'0', '1', '3', '4', '6', '7', '8', '9'}, shortc)
+
+	shortc = extract(allcipher, []byte{'1', '6'})
+	assert.EqualValues(t, []byte{'0', '2', '3', '4', '5', '7', '8', '9'}, shortc)
+
+	shortc = extract(allcipher, []byte{'4', '2'})
+	assert.EqualValues(t, []byte{'0', '1', '3', '5', '6', '7', '8', '9'}, shortc)
+}
+
+func TestStraddlingcheckerboard_BlockSize(t *testing.T) {
+	c, _ := NewCipher("ARABESQUE", "89")
+	assert.Equal(t, len("ARABESQUE"), c.BlockSize())
+}
+
+var TestSCEncryptData = []struct {
+	key string
+	pt  string
+	ct  string
+}{
+	{"ARABESQUE", "ATTACK", "07708081"},
+	{"SUBWAY", "TOLKIEN", "6819388137"},
+	{"PORTABLE", "RETRIBUTION", "1721693526840"},
+	{"ARABESQUE", "ATTACKAT2AM", "0770808107972297088"},
+}
+
+func TestStraddlingcheckerboard_Encrypt(t *testing.T) {
+	for _, cp := range TestSCEncryptData {
+		key := cp.key
+		plain := cp.pt
+
+		dst := make([]byte, len(plain)*2)
+		c, _ := NewCipher(key, "89")
+		c.Encrypt(dst, bytes.NewBufferString(plain).Bytes())
+
+		// Have to remove right-hand \x00
+		sct := strings.TrimRight(string(dst), "\x00")
+		assert.Equal(t, cp.ct, sct)
+	}
+}
+
+func TestStraddlingcheckerboard_Decrypt(t *testing.T) {
+	for _, cp := range TestSCEncryptData {
+		key := cp.key
+		ct := cp.ct
+
+		dst := make([]byte, len(ct))
+		c, _ := NewCipher(key, "89")
+		c.Decrypt(dst, bytes.NewBufferString(ct).Bytes())
+
+		// Have to remove right-hand \x00
+		spt := strings.TrimRight(string(dst), "\x00")
+		assert.Equal(t, cp.pt, spt)
+	}
+
+}
+
+// -- benchmarks
+
+var gc cipher.Block
+
+func BenchmarkNewCipher(b *testing.B) {
+	var c cipher.Block
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		c, _ = NewCipher("ARABESQUE", "89")
+	}
+	gc = c
+}
+
+var gb []string
+
+func BenchmarkTimes10(b *testing.B) {
+	var zero []string
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		zero = times10(0)
+	}
+	gb = zero
+}
+
+var gsh []byte
+
+func BenchmarkExtract(b *testing.B) {
+	var shortc []byte
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		shortc = extract(allcipher, []byte{'4', '2'})
+	}
+	gsh = shortc
+}
