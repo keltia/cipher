@@ -128,6 +128,38 @@ func TestTimes10(t *testing.T) {
 	assert.EqualValues(t, []string{"10", "11", "12", "13", "14", "15", "16", "17", "18", "19"}, dix)
 }
 
+func TestTimes11(t *testing.T) {
+	trente := times11('3')
+	assert.EqualValues(t, []string{"30", "31", "32", "33", "34", "35", "36", "37", "38", "39"}, trente)
+
+	dix := times11('1')
+	assert.EqualValues(t, []string{"10", "11", "12", "13", "14", "15", "16", "17", "18", "19"}, dix)
+}
+
+func TestSettimes10(t *testing.T) {
+	threeone := settimes10([]byte{'3', '1'})
+	assert.EqualValues(t,
+		[]string{"30", "31", "32", "33", "34", "35", "36", "37", "38", "39",
+			"10", "11", "12", "13", "14", "15", "16", "17", "18", "19"}, threeone)
+
+	huitneuf := settimes10([]byte{'8', '9'})
+	assert.EqualValues(t,
+		[]string{"80", "81", "82", "83", "84", "85", "86", "87", "88", "89",
+			"90", "91", "92", "93", "94", "95", "96", "97", "98", "99"}, huitneuf)
+}
+
+func TestSettimes11(t *testing.T) {
+	threeone := settimes11([]byte{'3', '1'})
+	assert.EqualValues(t,
+		[]string{"30", "31", "32", "33", "34", "35", "36", "37", "38", "39",
+			"10", "11", "12", "13", "14", "15", "16", "17", "18", "19"}, threeone)
+
+	huitneuf := settimes11([]byte{'8', '9'})
+	assert.EqualValues(t,
+		[]string{"80", "81", "82", "83", "84", "85", "86", "87", "88", "89",
+			"90", "91", "92", "93", "94", "95", "96", "97", "98", "99"}, huitneuf)
+}
+
 func TestExtract(t *testing.T) {
 	shortc := extract(allcipher, []byte{'2', '5'})
 	assert.EqualValues(t, []byte{'0', '1', '3', '4', '6', '7', '8', '9'}, shortc)
@@ -149,10 +181,10 @@ var TestSCEncryptData = []struct {
 	pt  string
 	ct  string
 }{
+	{"ARABESQUE", "ATTACKAT2AM", "0770808107972297088"},
 	{"ARABESQUE", "ATTACK", "07708081"},
 	{"SUBWAY", "TOLKIEN", "6819388137"},
 	{"PORTABLE", "RETRIBUTION", "1721693526840"},
-	{"ARABESQUE", "ATTACKAT2AM", "0770808107972297088"},
 }
 
 func TestStraddlingcheckerboard_Encrypt(t *testing.T) {
@@ -212,6 +244,36 @@ func BenchmarkTimes10(b *testing.B) {
 	gb = zero
 }
 
+func BenchmarkSettimes10(b *testing.B) {
+	var zero []string
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		zero = settimes10([]byte{8, 9})
+	}
+	gb = zero
+}
+
+func BenchmarkTimes11(b *testing.B) {
+	var zero []string
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		zero = times11(0)
+	}
+	gb = zero
+}
+
+func BenchmarkSettimes11(b *testing.B) {
+	var zero []string
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		zero = settimes11([]byte{8, 9})
+	}
+	gb = zero
+}
+
 var gsh []byte
 
 func BenchmarkExtract(b *testing.B) {
@@ -222,4 +284,30 @@ func BenchmarkExtract(b *testing.B) {
 		shortc = extract(allcipher, []byte{'4', '2'})
 	}
 	gsh = shortc
+}
+
+func BenchmarkStraddlingcheckerboard_Encrypt(b *testing.B) {
+	key := TestSCEncryptData[0].key
+	chrs := "89"
+
+	c, _ := NewCipher(key, chrs)
+	pt := TestSCEncryptData[0].pt
+	dst := make([]byte, 2*len(pt))
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		c.Encrypt(dst, bytes.NewBufferString(pt).Bytes())
+	}
+}
+
+func BenchmarkStraddlingcheckerboard_Decrypt(b *testing.B) {
+	key := TestSCEncryptData[0].key
+	chrs := "89"
+
+	c, _ := NewCipher(key, chrs)
+	ct := TestSCEncryptData[0].ct
+	dst := make([]byte, len(ct))
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		c.Encrypt(dst, bytes.NewBufferString(ct).Bytes())
+	}
 }
