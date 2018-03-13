@@ -44,8 +44,8 @@ func NewCipher(key string, chrs string) (cipher.Block, error) {
 	return c, nil
 }
 
-// times10 generates the set of c[0..9] aka "00"-"09" or "30"-"39"
-func times10(c byte) []string {
+// times11 generates the set of c[0..9] aka "00"-"09" or "30"-"39" by appending into tmp
+func times11(c byte) []string {
 	var tmp []string
 
 	if c == '0' {
@@ -56,7 +56,22 @@ func times10(c byte) []string {
 		for _, b := range allcipher {
 			tmp = append(tmp, string(c)+string(b))
 		}
+	}
+	return tmp
+}
 
+// times10 generates the set of c[0..9] aka "00"-"09" or "30"-"39", tmp is pre-allocated
+func times10(c byte) []string {
+	var tmp = make([]string, 10)
+
+	if c == '0' {
+		for i, b := range allcipher {
+			tmp[i] = string(b)
+		}
+	} else {
+		for i, b := range allcipher {
+			tmp[i] = string(c) + string(b)
+		}
 	}
 	return tmp
 }
@@ -72,7 +87,7 @@ func extract(set, two []byte) []byte {
 	return bytes.Map(f, set)
 }
 
-func settimes10(set []byte) []string {
+func settimes11(set []byte) []string {
 
 	longc := []string{}
 
@@ -81,6 +96,17 @@ func settimes10(set []byte) []string {
 		tmpc := times10(byte(v))
 		longc = append(longc, tmpc...)
 	}
+	return longc
+}
+
+func settimes10(set []byte) []string {
+
+	longc := make([]string, 20)
+
+	// Generate all double digits ciphertext bigrams
+
+	copy(longc, times10(set[0]))
+	copy(longc[10:], times10(set[1]))
 	return longc
 }
 
@@ -140,17 +166,50 @@ func (c *straddlingcheckerboard) Decrypt(dst, src []byte) {
 			db = []byte{0, 0}
 		)
 
+		// Check whether we have a short or long codegroup
 		ch, _ := ct.ReadByte()
 		if ch == c.longc[0] || ch == c.longc[1] {
+			// Long
 			db[0] = ch
 			db[1], _ = ct.ReadByte()
 			ptc = c.dec[string(db)]
 			i += 2
 		} else {
+			// Short
 			ptc = c.dec[string(ch)]
 			i++
 		}
-		dst[j] = ptc
+
+		/*
+			Check for the '/' code group
+			followed by <pt><pt><b0><b1> where "b0b1" is the encoding group for /
+
+			Can be a regular / so check afterward for matching /. If not, it gets complicated.
+
+			If I am to support this, I will have to rollback up to 4 bytes and managing all the
+			corner cases there, not sure it is worth it.
+
+			Encrypt() can not generate such degenerate cases so I might just leave it at that.
+		*/
+		if ptc == '/' {
+			/*
+				Read the next four bytes representing <n0><n0><b0><b1> with <b0><b1> being the
+				code word for / (it will never be one of the short codes.
+			*/
+			var numb = []byte{0, 0, 0, 0}
+
+			n, err := ct.Read(numb)
+			if err != nil || n != 4 {
+				ptc = 'X'
+				break
+			}
+			if numb[0] == numb[1] && bytes.Equal(db, []byte{numb[2], numb[3]}) {
+				// We have a number
+				ptc = numb[0]
+				i += 4
+			}
+		}
+		pt.WriteByte(ptc)
 		j++
 	}
 	copy(dst, pt.Bytes())
