@@ -177,23 +177,26 @@ func TestStraddlingcheckerboard_BlockSize(t *testing.T) {
 }
 
 var TestSCEncryptData = []struct {
-	key string
-	pt  string
-	ct  string
+	key  string
+	chrs string
+	pt   string
+	ct   string
 }{
-	{"ARABESQUE", "ATTACKAT2AM", "0770808107972297088"},
-	{"ARABESQUE", "ATTACK", "07708081"},
-	{"SUBWAY", "TOLKIEN", "6819388137"},
-	{"PORTABLE", "RETRIBUTION", "1721693526840"},
+	{"ARABESQUE", "89", "ATTACKAT2AM", "0770808107972297088"},
+	{"ARABESQUE", "37", "IFYOUCANREADTHIS", "5377173630031203377254"},
+	{"ARABESQUE", "89", "ATTACK", "07708081"},
+	{"SUBWAY", "89", "TOLKIEN", "6819388137"},
+	{"PORTABLE", "89", "RETRIBUTION", "1721693526840"},
 }
 
 func TestStraddlingcheckerboard_Encrypt(t *testing.T) {
 	for _, cp := range TestSCEncryptData {
 		key := cp.key
 		plain := cp.pt
+		chrs := cp.chrs
 
 		dst := make([]byte, len(plain)*2)
-		c, _ := NewCipher(key, "89")
+		c, _ := NewCipher(key, chrs)
 		c.Encrypt(dst, bytes.NewBufferString(plain).Bytes())
 
 		// Have to remove right-hand \x00
