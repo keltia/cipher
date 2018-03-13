@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"fmt"
 	"github.com/keltia/cipher"
-	"log"
 )
 
 const (
@@ -215,7 +214,8 @@ func (c *straddlingcheckerboard) Decrypt(dst, src []byte) {
 	copy(dst, pt.Bytes())
 }
 
+/*
 // verbose displays only if fVerbose is set
 func message(str string, a ...interface{}) {
 	log.Printf(str, a...)
-}
+}*/
