@@ -26,7 +26,8 @@ It currently implement a few of the Ruby code, namely:
 - Simple transposition (can be used with other ciphers as super-encipherement)
 - Polybius square bigrammatic cipher (for ADFGVX = polybius + transposition)
 - ADFGVX (6x6 square including numbers)
-- Straddling Checkerboard (for the future Nihilist cipher)
+- Straddling Checkerboard (for the Nihilist cipher)
+- Nihilist cipher (transposition as super-encipherment)
 
 It does not try to reinvent the wheel and implements the `cipher.Block` interface defined in the Go standard library (see `src/crypto/cipher/cipher.go`).
 
