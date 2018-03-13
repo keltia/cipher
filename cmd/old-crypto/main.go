@@ -8,6 +8,7 @@ import (
 	"github.com/keltia/cipher/adfgvx"
 	"github.com/keltia/cipher/caesar"
 	"github.com/keltia/cipher/chaocipher"
+	"github.com/keltia/cipher/nihilist"
 	"github.com/keltia/cipher/playfair"
 	"github.com/keltia/cipher/square"
 	"github.com/keltia/cipher/straddling"
@@ -60,6 +61,9 @@ func init() {
 
 	c, _ = straddling.NewCipher("ARABESQUE", "37")
 	allciphers = append(allciphers, CPH{"Straddling", c, len(plain) * 2})
+
+	c, _ = nihilist.NewCipher("ARABESQUE", "SUBWAY", "37")
+	allciphers = append(allciphers, CPH{"Nihilist", c, len(plain) * 2})
 }
 
 func main() {

@@ -8,10 +8,15 @@ GOBIN=   ${GOPATH}/bin
 BIN=	old-crypto
 EXE=	${BIN}.exe
 
-SRCS= caesar/cipher.go		crypto.go			null/cipher_test.go \
-      caesar/cipher_test.go		crypto_test.go			playfair/cipher.go \
-      cmd/old-crypto/main.go		null/cipher.go			playfair/cipher_test.go \
-      chaocipher/cipher.go chaocipher/cipher_test.go
+SRCS= cmd/old-crypto/main.go \
+	  caesar/cipher.go crypto.go \
+      crypto_test.go playfair/cipher.go \
+      null/cipher.go chaocipher/cipher.go \
+      adfgvx/cipher.go nihilist/cipher.go straddling/cipher.go
+
+SRCST= caesar/cipher_test.go chaocipher/cipher_test.go null/cipher_test.go \
+	   playfair/cipher_test.go adfgvx/cipher_test.go straddling/cipher_test.go \
+	   nihilist/cipher_test.go
 
 OPTS=	-ldflags="-s -w" -v
 
