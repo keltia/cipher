@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"github.com/keltia/cipher/straddling"
 	"github.com/keltia/cipher/transposition"
-	"log"
 	"strings"
 )
 
@@ -51,11 +50,11 @@ func (c *nihilistcipher) Decrypt(dst, src []byte) {
 	var buf = make([]byte, len(src))
 
 	(*c.transp).Decrypt(buf, src)
-	message("buf=%s", string(buf))
 	(*c.sc).Decrypt(dst, buf)
 }
 
+/*
 // verbose displays only if fVerbose is set
 func message(str string, a ...interface{}) {
 	log.Printf(str, a...)
-}
+}*/
