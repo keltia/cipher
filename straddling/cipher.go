@@ -110,7 +110,7 @@ func settimes10(set []byte) []string {
 }
 
 func (c *straddlingcheckerboard) expandKey() {
-	shortc := times10('0')
+	shortc := c.shortc
 	longc := settimes10(c.longc)
 
 	// Assign a mono/bigram to each letter in the shuffled key
@@ -119,8 +119,8 @@ func (c *straddlingcheckerboard) expandKey() {
 	bfull := bytes.NewBufferString(c.full).Bytes()
 	for _, ch := range bfull {
 		if bytes.Contains(freq, []byte{ch}) {
-			c.enc[ch] = shortc[i]
-			c.dec[shortc[i]] = ch
+			c.enc[ch] = string(shortc[i])
+			c.dec[string(shortc[i])] = ch
 			i++
 		} else {
 			c.enc[ch] = longc[j]
