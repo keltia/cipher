@@ -134,11 +134,6 @@ func TestExpandKey1(t *testing.T) {
 
 	assert.EqualValues(t, []byte{'0', '1', '2', '4', '5', '7', '8', '9'}, cc.shortc)
 	assert.EqualValues(t, []byte{'3', '6'}, cc.longc)
-
-	cp := TestExpandKeyData[0]
-	if !reflect.DeepEqual(cp.enc, cc.enc) {
-		t.Errorf("%v is different from %v", cc.enc, cp.enc)
-	}
 }
 
 func TestTimes10(t *testing.T) {
