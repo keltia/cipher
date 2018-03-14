@@ -14,6 +14,7 @@ import (
 	"github.com/keltia/cipher/square"
 	"github.com/keltia/cipher/straddling"
 	"github.com/keltia/cipher/transposition"
+	"github.com/keltia/cipher/wheatstone"
 	"strings"
 )
 
@@ -66,6 +67,9 @@ func init() {
 
 	c, _ = nihilist.NewCipher("ARABESQUE", "SUBWAY", "37")
 	allciphers = append(allciphers, CPH{"Nihilist", c, len(plain) * 2})
+
+	c, _ = wheatstone.NewCipher('M', "CIPHER", "MACHINE")
+	allciphers = append(allciphers, CPH{"Wheatstone", c, len(plain)})
 }
 
 func main() {
