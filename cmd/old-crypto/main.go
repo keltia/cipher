@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/cipher"
 	"flag"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"github.com/keltia/cipher/square"
 	"github.com/keltia/cipher/straddling"
 	"github.com/keltia/cipher/transposition"
+	"strings"
 )
 
 var (
@@ -76,5 +78,18 @@ func main() {
 		c.Encrypt(dst, []byte(plain))
 		fmt.Println("==> ", cp.name)
 		fmt.Printf("%s\n", crypto.ByN(string(dst), 5))
+
+		ncrypt := strings.TrimRight(string(dst), "\x00")
+		src1 := bytes.NewBufferString(ncrypt).Bytes()
+		dst1 := make([]byte, len(plain))
+
+		c.Decrypt(dst1, src1)
+
+		nplain := strings.TrimRight(string(dst1), "\x00")
+		if nplain == plain {
+			fmt.Printf("decrypt ok\n\n")
+		} else {
+			fmt.Printf("decrypt not ok\n%s\n%s\n\n", plain, nplain)
+		}
 	}
 }
