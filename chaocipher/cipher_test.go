@@ -18,6 +18,81 @@ var (
 	keyCipher = "HXUCZVAMDSLKPEFJRIGTWOBNYQ"
 )
 
+func TestNewCipher(t *testing.T) {
+	c, err := NewCipher(alphabet, alphabet)
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
+	assert.Implements(t, (*cipher.Block)(nil), c)
+}
+
+func TestNewCipher2(t *testing.T) {
+	c, err := NewCipher("AB", "CD")
+	assert.Error(t, err)
+	assert.EqualValues(t, &chaocipher{}, c)
+}
+
+func TestChaocipher_BlockSize(t *testing.T) {
+	c, _ := NewCipher(alphabet, alphabet)
+	assert.NotNil(t, c)
+	assert.Equal(t, 1, c.BlockSize())
+}
+
+func TestChaocipher_Encrypt(t *testing.T) {
+	c, err := NewCipher(keyPlain, keyCipher)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
+
+	src := bytes.NewBufferString(plainTxt).Bytes()
+	enc := bytes.NewBufferString(cipherTxt).Bytes()
+	dst := make([]byte, len(src))
+	c.Encrypt(dst, src)
+	assert.EqualValues(t, enc, dst)
+	gb = enc
+}
+
+func TestChaocipher_EncryptLong(t *testing.T) {
+	c, err := NewCipher(keyPlain, keyCipher)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
+
+	src := bytes.NewBufferString(lplainTxt).Bytes()
+	enc := bytes.NewBufferString(lcipherTxt).Bytes()
+	dst := make([]byte, len(src))
+	c.Encrypt(dst, src)
+	assert.EqualValues(t, enc, dst)
+	gb = enc
+}
+
+func TestChaocipher_Decrypt(t *testing.T) {
+	c, err := NewCipher(keyPlain, keyCipher)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
+
+	src := bytes.NewBufferString(plainTxt).Bytes()
+	dec := bytes.NewBufferString(cipherTxt).Bytes()
+	dst := make([]byte, len(dec))
+	c.Decrypt(dst, dec)
+	gb = src
+	assert.EqualValues(t, src, dst)
+}
+
+func TestChaocipher_DecryptLong(t *testing.T) {
+	c, err := NewCipher(keyPlain, keyCipher)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
+
+	src := bytes.NewBufferString(lplainTxt).Bytes()
+	dec := bytes.NewBufferString(lcipherTxt).Bytes()
+	dst := make([]byte, len(dec))
+	c.Decrypt(dst, dec)
+	gb = src
+	assert.EqualValues(t, src, dst)
+}
+
 func TestAdvance(t *testing.T) {
 	c, _ := NewCipher(keyPlain, keyCipher)
 
@@ -35,18 +110,6 @@ func TestAdvance(t *testing.T) {
 
 	exppw := bytes.NewBufferString("VZGJRIHWXUMCPKTLNBQDEOYSFA").Bytes()
 	assert.EqualValues(t, exppw, cc.pw)
-}
-
-func BenchmarkAdvance(b *testing.B) {
-	c, _ := NewCipher(keyPlain, keyCipher)
-
-	cc := c.(*chaocipher)
-	idx := bytes.Index([]byte(keyPlain), []byte{'A'})
-
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		cc.advance(idx)
-	}
 }
 
 func TestAdvanceReal(t *testing.T) {
@@ -187,205 +250,6 @@ func TestEncode(t *testing.T) {
 	assert.EqualValues(t, final, cc.cw)
 }
 
-var gcw byte
-
-func BenchmarkEncode(b *testing.B) {
-	var cw byte
-	c, _ := NewCipher(keyPlain, keyCipher)
-
-	cc := c.(*chaocipher)
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		cw = cc.encode(byte('A'))
-	}
-	gcw = cw
-}
-
-func TestEncode1(t *testing.T) {
-	c, err := NewCipher(keyPlain, keyCipher)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, c)
-
-	cc := c.(*chaocipher)
-	cw := cc.encode(byte('W'))
-
-	assert.Equal(t, byte('O'), cw)
-
-	final := bytes.NewBufferString("ONYQHXUCZVAMDBSLKPEFJRIGTW").Bytes()
-	assert.EqualValues(t, final, cc.cw)
-
-	final = bytes.NewBufferString("XUCPTLNBQDEOYMSFAVZKGJRIHW").Bytes()
-	assert.EqualValues(t, final, cc.pw)
-}
-
-func TestDecode(t *testing.T) {
-	c, err := NewCipher(keyPlain, keyCipher)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, c)
-
-	cc := c.(*chaocipher)
-	cw := cc.decode(byte('P'))
-
-	assert.Equal(t, byte('A'), cw)
-
-	final := bytes.NewBufferString("VZGJRIHWXUMCPKTLNBQDEOYSFA").Bytes()
-	assert.EqualValues(t, final, cc.pw)
-
-	final = bytes.NewBufferString("PFJRIGTWOBNYQEHXUCZVAMDSLK").Bytes()
-	assert.EqualValues(t, final, cc.cw)
-
-}
-
-func BenchmarkDecode(b *testing.B) {
-	var pw byte
-	c, _ := NewCipher(keyPlain, keyCipher)
-
-	cc := c.(*chaocipher)
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		pw = cc.decode(byte('P'))
-	}
-	gcw = pw
-}
-
-func TestNewCipher(t *testing.T) {
-	c, err := NewCipher(alphabet, alphabet)
-	assert.NoError(t, err)
-	assert.NotNil(t, c)
-	assert.Implements(t, (*cipher.Block)(nil), c)
-}
-
-func TestNewCipher2(t *testing.T) {
-	c, err := NewCipher("AB", "CD")
-	assert.Error(t, err)
-	assert.EqualValues(t, &chaocipher{}, c)
-}
-
-func TestChaocipher_BlockSize(t *testing.T) {
-	c, _ := NewCipher(alphabet, alphabet)
-	assert.NotNil(t, c)
-	assert.Equal(t, 1, c.BlockSize())
-}
-
-func TestChaocipher_Encrypt(t *testing.T) {
-	c, err := NewCipher(keyPlain, keyCipher)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, c)
-
-	src := bytes.NewBufferString(plainTxt).Bytes()
-	enc := bytes.NewBufferString(cipherTxt).Bytes()
-	dst := make([]byte, len(src))
-	c.Encrypt(dst, src)
-	assert.EqualValues(t, enc, dst)
-	_ = enc
-}
-
-func TestChaocipher_EncryptLong(t *testing.T) {
-	c, err := NewCipher(keyPlain, keyCipher)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, c)
-
-	src := bytes.NewBufferString(lplainTxt).Bytes()
-	enc := bytes.NewBufferString(lcipherTxt).Bytes()
-	dst := make([]byte, len(src))
-	c.Encrypt(dst, src)
-	assert.EqualValues(t, enc, dst)
-	_ = enc
-}
-
-func TestChaocipher_Decrypt(t *testing.T) {
-	c, err := NewCipher(keyPlain, keyCipher)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, c)
-
-	src := bytes.NewBufferString(plainTxt).Bytes()
-	dec := bytes.NewBufferString(cipherTxt).Bytes()
-	dst := make([]byte, len(dec))
-	c.Decrypt(dst, dec)
-	_ = src
-	assert.EqualValues(t, src, dst)
-}
-
-func TestChaocipher_DecryptLong(t *testing.T) {
-	c, err := NewCipher(keyPlain, keyCipher)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, c)
-
-	src := bytes.NewBufferString(lplainTxt).Bytes()
-	dec := bytes.NewBufferString(lcipherTxt).Bytes()
-	dst := make([]byte, len(dec))
-	c.Decrypt(dst, dec)
-	_ = src
-	assert.EqualValues(t, src, dst)
-}
-
-var gc cipher.Block
-
-func BenchmarkNewCipher(b *testing.B) {
-	var c cipher.Block
-
-	for n := 0; n < b.N; n++ {
-		c, _ = NewCipher(alphabet, alphabet)
-	}
-	gc = c
-}
-
-func BenchmarkChaocipher_Encrypt(b *testing.B) {
-	c, _ := NewCipher(keyPlain, keyCipher)
-
-	src := bytes.NewBufferString(plainTxt).Bytes()
-	dst := make([]byte, len(src))
-
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		c.Encrypt(dst, src)
-	}
-}
-
-func BenchmarkChaocipher_Decrypt(b *testing.B) {
-	c, _ := NewCipher(keyPlain, keyCipher)
-
-	src := bytes.NewBufferString(cipherTxt).Bytes()
-	dst := make([]byte, len(src))
-
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		c.Decrypt(dst, src)
-	}
-}
-
-func BenchmarkChaocipher_EncryptLong(b *testing.B) {
-	c, _ := NewCipher(keyPlain, keyCipher)
-
-	src := bytes.NewBufferString(lplainTxt).Bytes()
-	dst := make([]byte, len(src))
-
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		c.Encrypt(dst, src)
-	}
-}
-
-func BenchmarkChaocipher_DecryptLong(b *testing.B) {
-	c, _ := NewCipher(keyPlain, keyCipher)
-
-	src := bytes.NewBufferString(lcipherTxt).Bytes()
-	dst := make([]byte, len(src))
-
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		c.Decrypt(dst, src)
-	}
-}
-
-// ---
-
 func TestLshift(t *testing.T) {
 	var a = []byte{0, 1, 2, 3, 4, 5}
 	var b = []byte{1, 2, 3, 4, 5, 0}
@@ -481,6 +345,132 @@ func TestDup(t *testing.T) {
 	assert.True(t, bytes.Equal(a, b))
 }
 
+func TestEncode1(t *testing.T) {
+	c, err := NewCipher(keyPlain, keyCipher)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
+
+	cc := c.(*chaocipher)
+	cw := cc.encode(byte('W'))
+
+	assert.Equal(t, byte('O'), cw)
+
+	final := bytes.NewBufferString("ONYQHXUCZVAMDBSLKPEFJRIGTW").Bytes()
+	assert.EqualValues(t, final, cc.cw)
+
+	final = bytes.NewBufferString("XUCPTLNBQDEOYMSFAVZKGJRIHW").Bytes()
+	assert.EqualValues(t, final, cc.pw)
+}
+
+func TestDecode(t *testing.T) {
+	c, err := NewCipher(keyPlain, keyCipher)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
+
+	cc := c.(*chaocipher)
+	cw := cc.decode(byte('P'))
+
+	assert.Equal(t, byte('A'), cw)
+
+	final := bytes.NewBufferString("VZGJRIHWXUMCPKTLNBQDEOYSFA").Bytes()
+	assert.EqualValues(t, final, cc.pw)
+
+	final = bytes.NewBufferString("PFJRIGTWOBNYQEHXUCZVAMDSLK").Bytes()
+	assert.EqualValues(t, final, cc.cw)
+
+}
+
+// -- benchmarks
+
+var gcw byte
+
+func BenchmarkEncode(b *testing.B) {
+	var cw byte
+	c, _ := NewCipher(keyPlain, keyCipher)
+
+	cc := c.(*chaocipher)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		cw = cc.encode(byte('A'))
+	}
+	gcw = cw
+}
+
+func BenchmarkDecode(b *testing.B) {
+	var pw byte
+	c, _ := NewCipher(keyPlain, keyCipher)
+
+	cc := c.(*chaocipher)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		pw = cc.decode(byte('P'))
+	}
+	gcw = pw
+}
+
+var gc cipher.Block
+
+func BenchmarkNewCipher(b *testing.B) {
+	var c cipher.Block
+
+	for n := 0; n < b.N; n++ {
+		c, _ = NewCipher(alphabet, alphabet)
+	}
+	gc = c
+}
+
+func BenchmarkChaocipher_Encrypt(b *testing.B) {
+	c, _ := NewCipher(keyPlain, keyCipher)
+
+	src := bytes.NewBufferString(plainTxt).Bytes()
+	dst := make([]byte, len(src))
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		c.Encrypt(dst, src)
+	}
+}
+
+func BenchmarkChaocipher_Decrypt(b *testing.B) {
+	c, _ := NewCipher(keyPlain, keyCipher)
+
+	src := bytes.NewBufferString(cipherTxt).Bytes()
+	dst := make([]byte, len(src))
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		c.Decrypt(dst, src)
+	}
+}
+
+func BenchmarkChaocipher_EncryptLong(b *testing.B) {
+	c, _ := NewCipher(keyPlain, keyCipher)
+
+	src := bytes.NewBufferString(lplainTxt).Bytes()
+	dst := make([]byte, len(src))
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		c.Encrypt(dst, src)
+	}
+}
+
+func BenchmarkChaocipher_DecryptLong(b *testing.B) {
+	c, _ := NewCipher(keyPlain, keyCipher)
+
+	src := bytes.NewBufferString(lcipherTxt).Bytes()
+	dst := make([]byte, len(src))
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		c.Decrypt(dst, src)
+	}
+}
+
+// ---
+
 var gb []byte
 
 func BenchmarkLshiftN(b *testing.B) {
@@ -510,4 +500,16 @@ func BenchmarkDup(b *testing.B) {
 		bb = dup(aa)
 	}
 	gb = bb
+}
+
+func BenchmarkAdvance(b *testing.B) {
+	c, _ := NewCipher(keyPlain, keyCipher)
+
+	cc := c.(*chaocipher)
+	idx := bytes.Index([]byte(keyPlain), []byte{'A'})
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		cc.advance(idx)
+	}
 }
