@@ -112,11 +112,32 @@ func TestExpandKey(t *testing.T) {
 	cc := c.(*straddlingcheckerboard)
 	cp := TestExpandKeyData[0]
 
+	assert.EqualValues(t, []byte{'0', '1', '2', '3', '4', '5', '6', '7'}, cc.shortc)
+	assert.EqualValues(t, []byte{'8', '9'}, cc.longc)
+
 	if !reflect.DeepEqual(cp.enc, cc.enc) {
-		t.Errorf("%v is different from %v", cp.enc, cc.enc)
+		t.Errorf("%v is different from %v", cc.enc, cp.enc)
 	}
 	if !reflect.DeepEqual(cp.dec, cc.dec) {
-		t.Errorf("%v is different from %v", cp.dec, cc.dec)
+		t.Errorf("%v is different from %v", cc.dec, cp.dec)
+	}
+}
+
+func TestExpandKey1(t *testing.T) {
+	c, err := NewCipher("ARABESQUE", "36")
+
+	assert.NotNil(t, c)
+	assert.NoError(t, err)
+	assert.Implements(t, (*cipher.Block)(nil), c)
+
+	cc := c.(*straddlingcheckerboard)
+
+	assert.EqualValues(t, []byte{'0', '1', '2', '4', '5', '7', '8', '9'}, cc.shortc)
+	assert.EqualValues(t, []byte{'3', '6'}, cc.longc)
+
+	cp := TestExpandKeyData[0]
+	if !reflect.DeepEqual(cp.enc, cc.enc) {
+		t.Errorf("%v is different from %v", cc.enc, cp.enc)
 	}
 }
 
@@ -183,7 +204,8 @@ var TestSCEncryptData = []struct {
 	ct   string
 }{
 	{"ARABESQUE", "89", "ATTACKAT2AM", "0770808107972297088"},
-	{"ARABESQUE", "37", "IFYOUCANREADTHIS", "5377173630031203377254"},
+	{"ARABESQUE", "36", "ATTACKAT2AM", "0990303109672267038"},
+	{"ARABESQUE", "37", "IFYOUCANREADTHIS", "6377173830041203397265"},
 	{"ARABESQUE", "89", "ATTACK", "07708081"},
 	{"SUBWAY", "89", "TOLKIEN", "6819388137"},
 	{"PORTABLE", "89", "RETRIBUTION", "1721693526840"},
@@ -209,9 +231,10 @@ func TestStraddlingcheckerboard_Decrypt(t *testing.T) {
 	for _, cp := range TestSCEncryptData {
 		key := cp.key
 		ct := cp.ct
+		chrs := cp.chrs
 
 		dst := make([]byte, len(ct))
-		c, _ := NewCipher(key, "89")
+		c, _ := NewCipher(key, chrs)
 		c.Decrypt(dst, bytes.NewBufferString(ct).Bytes())
 
 		// Have to remove right-hand \x00
