@@ -13,7 +13,8 @@ const (
 )
 
 type chaocipher struct {
-	pw, cw []byte
+	pkey, ckey string
+	pw, cw     []byte
 }
 
 // NewCipher creates a new cipher with the provided keys
@@ -24,8 +25,10 @@ func NewCipher(pkey, ckey string) (cipher.Block, error) {
 	}
 
 	c := &chaocipher{
-		pw: bytes.NewBufferString(pkey).Bytes(),
-		cw: bytes.NewBufferString(ckey).Bytes(),
+		pkey: pkey,
+		ckey: ckey,
+		pw:   bytes.NewBufferString(pkey).Bytes(),
+		cw:   bytes.NewBufferString(ckey).Bytes(),
 	}
 	return c, nil
 }
@@ -115,13 +118,24 @@ func (c *chaocipher) decode(ch byte) byte {
 }
 
 func (c *chaocipher) Encrypt(dst, src []byte) {
+	c.reset()
 	for i, ch := range src {
 		dst[i] = c.encode(ch)
 	}
 }
 
 func (c *chaocipher) Decrypt(dst, src []byte) {
+	c.reset()
 	for i, ch := range src {
 		dst[i] = c.decode(ch)
 	}
+}
+
+/*
+This is necessary because the chaocipher object retain state across calls
+*/
+// Reset state to the beginning.
+func (c *chaocipher) reset() {
+	c.pw = bytes.NewBufferString(c.pkey).Bytes()
+	c.cw = bytes.NewBufferString(c.ckey).Bytes()
 }
