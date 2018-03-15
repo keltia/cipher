@@ -10,8 +10,8 @@ import (
 
 const (
 	alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	lenPL    = len(alphabet)
-	lenCT    = lenPL + 1
+	lenPL    = len(alphabet) + 1
+	lenCT    = len(alphabet)
 )
 
 type wheatstone struct {
@@ -43,7 +43,7 @@ func NewCipher(start byte, pkey, ckey string) (cipher.Block, error) {
 	}
 	c.ctpos = bytes.IndexByte(c.actw, start)
 
-	message("c=%#v", c)
+	//message("c=%#v", c)
 	return c, nil
 }
 
@@ -99,11 +99,13 @@ This is necessary because the wheatstone object retain state across calls
 // Reset state to the beginning.
 func (c *wheatstone) reset() {
 	// Transform with key
-	pkey := crypto.Shuffle(c.pkey, alphabet)
+	pkey := "+" + crypto.Shuffle(c.pkey, alphabet)
 	ckey := crypto.Shuffle(c.ckey, alphabet)
 
 	c.aplw = bytes.NewBufferString(pkey).Bytes()
 	c.actw = bytes.NewBufferString(ckey).Bytes()
+
+	c.ctpos = bytes.IndexByte(c.actw, c.start)
 }
 
 // verbose displays only if fVerbose is set
