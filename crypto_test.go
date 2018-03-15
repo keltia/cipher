@@ -227,6 +227,21 @@ func TestByN1(t *testing.T) {
 	}
 }
 
+var FDData = []struct {
+	in, out string
+}{
+	{"ABCDEF", "ABCDEF"},
+	{"AABCDE", "AQABCDE"},
+	{"AAAAA", "AQAQAQAQA"},
+}
+
+func TestFixDouble(t *testing.T) {
+	for _, cp := range FDData {
+		a := FixDouble(cp.in, 'Q')
+		assert.Equal(t, cp.out, a)
+	}
+}
+
 // -- benchmarks
 
 func BenchmarkShuffle(b *testing.B) {
@@ -327,4 +342,26 @@ func BenchmarkByN1(b *testing.B) {
 		s = ByN1(str, nb)
 	}
 	gs = s
+}
+
+func BenchmarkFixDoubleHalf(b *testing.B) {
+	a := ""
+	str := "AACDAAOIAALKAANNAA"
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		a = FixDouble(str, 'Q')
+	}
+	gs = a
+}
+
+func BenchmarkFixDoubleAll(b *testing.B) {
+	a := ""
+	str := "AAAAAAAAAA"
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		a = FixDouble(str, 'Q')
+	}
+	gs = a
 }

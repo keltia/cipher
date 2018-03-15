@@ -306,6 +306,22 @@ func ByN1(ct string, n int) string {
 	return strings.TrimRight(out.String(), " ")
 }
 
+// Replace all instance of NN with NQN
+func FixDouble(str string, fill byte) string {
+	fixed := bytes.Buffer{}
+
+	p := rune(0)
+	for _, ch := range str {
+		if ch == p {
+			fixed.WriteByte(fill)
+		} else {
+			p = ch
+		}
+		fixed.WriteByte(byte(ch))
+	}
+	return fixed.String()
+}
+
 // verbose displays only if fVerbose is set
 func message(str string, a ...interface{}) {
 	log.Printf(str, a...)
