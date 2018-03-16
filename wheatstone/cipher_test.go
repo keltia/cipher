@@ -17,39 +17,49 @@ var (
 	pkey = "+CAKSYIBLTZPDMUHFNVEGOWRJQX"
 	ckey = "MBOVADPWCFQXHGRYIJSZNKTELU"
 
-	lplainTxt  = "IFYOUCANREADTHISYOUEITHERDOWNLOADEDMYOWNIMPLEMENTATIONOFwheatstoneORYOUWROTEONEOFYOUROWNINEITHERCASELETMEKNOWANDACCEPTMYCONGRATULATIONSX"
+	lplainTxt  = "IFYOUCANREADTHISYOUEITHERDOWNLOADEDMYOWNIMPLEMENTATIONOFCHAOCIPHERORYOUWROTEONEOFYOUROWNINEITHERCASELETMEKNOWANDACCEPTMYCONGRATULATIONSX"
 	lcipherTxt = "TLMAGOONSKJBJYBQVGDQCDUNWNMZPLOYCWPCWKWQRBOYADSLQBKYCDGXJOLONKTTLRUZZJQGJBQNRQHQRREUIYIDHZOMVWZMVYUFQOGSNNUVYTJGQPSQTBRWFHLTCLVVBPMYYQVC"
 
 	aplw = []byte{'+', 'C', 'A', 'K', 'S', 'Y', 'I', 'B', 'L', 'T', 'Z', 'P', 'D', 'M', 'U', 'H', 'F', 'N', 'V', 'E', 'G', 'O', 'W', 'R', 'J', 'Q', 'X'}
 	actw = []byte{'M', 'B', 'O', 'V', 'A', 'D', 'P', 'W', 'C', 'F', 'Q', 'X', 'H', 'G', 'R', 'Y', 'I', 'J', 'S', 'Z', 'N', 'K', 'T', 'E', 'L', 'U'}
 )
 
-var TestWheatstoneData = []struct {
+var TestWheatstoneNewCipherData = []struct {
 	pkey  string
 	ckey  string
 	start byte
 	aplw  []byte
 	actw  []byte
+}{
+	{"CIPHER", "MACHINE", 'M', []byte{'+', 'C', 'A', 'K', 'S', 'Y', 'I', 'B', 'L', 'T', 'Z', 'P', 'D', 'M', 'U', 'H', 'F', 'N', 'V', 'E', 'G', 'O', 'W', 'R', 'J', 'Q', 'X'}, []byte{'M', 'B', 'O', 'V', 'A', 'D', 'P', 'W', 'C', 'F', 'Q', 'X', 'H', 'G', 'R', 'Y', 'I', 'J', 'S', 'Z', 'N', 'K', 'T', 'E', 'L', 'U'}},
+	{"CIPHER", "MACHINE", 'A', []byte{'+', 'C', 'A', 'K', 'S', 'Y', 'I', 'B', 'L', 'T', 'Z', 'P', 'D', 'M', 'U', 'H', 'F', 'N', 'V', 'E', 'G', 'O', 'W', 'R', 'J', 'Q', 'X'}, []byte{'M', 'B', 'O', 'V', 'A', 'D', 'P', 'W', 'C', 'F', 'Q', 'X', 'H', 'G', 'R', 'Y', 'I', 'J', 'S', 'Z', 'N', 'K', 'T', 'E', 'L', 'U'}},
+}
+
+var TestWheatstoneEncryptData = []struct {
+	key1  string
+	key2  string
+	start byte
 	pt    string
 	ct    string
-}{}
+}{
+	{"CIPHER", "MACHINE", 'M', "CHARLES+WHEATSTONE+HAD+A+REMARKABLY+FERTILE+MIND", "BYVLQKWAMNLCYXIOUBFLHTXGHFPBJHZZLUEZFHIVBVRTFVRQ"},
+	{"CIPHER", "MACHINE", 'A', "CHARLES+WHEATSTONE+HAD+A+REMARKABLY+FERTILE+MIND", "DZWORUXCALOHZYNPVDGOIMYJIGQDKIEEOVBEGINWDWSMGWSR"},
+}
 
 func TestNewCipher(t *testing.T) {
-	c, err := NewCipher('M', key1, key2)
-	assert.NoError(t, err)
-	assert.NotNil(t, c)
-	assert.Implements(t, (*cipher.Block)(nil), c)
+	for _, cp := range TestWheatstoneNewCipherData {
+		c, err := NewCipher(cp.start, cp.pkey, cp.ckey)
+		assert.NoError(t, err)
+		assert.NotNil(t, c)
+		assert.Implements(t, (*cipher.Block)(nil), c)
 
-	cc := c.(*wheatstone)
-	assert.Equal(t, pkey, cc.pkey)
-	assert.Equal(t, ckey, cc.ckey)
-	assert.EqualValues(t, aplw, cc.aplw)
-	assert.EqualValues(t, actw, cc.actw)
-	assert.Equal(t, len(alphabet)+1, len(cc.aplw))
-	assert.Equal(t, len(alphabet), len(cc.actw))
-	assert.Equal(t, 0, cc.curpos)
-	assert.Equal(t, 0, cc.ctpos)
-	assert.Equal(t, byte('M'), cc.start)
+		cc := c.(*wheatstone)
+		assert.EqualValues(t, cp.aplw, cc.aplw)
+		assert.EqualValues(t, cp.actw, cc.actw)
+		assert.Equal(t, len(alphabet)+1, len(cc.aplw))
+		assert.Equal(t, len(alphabet), len(cc.actw))
+		assert.Equal(t, cp.start, cc.start)
+	}
 }
 
 func TestWheatstone_BlockSize(t *testing.T) {
@@ -150,19 +160,21 @@ func TestDecode(t *testing.T) {
 }
 
 func TestWheatstone_Encrypt(t *testing.T) {
-	c, err := NewCipher('M', key1, key2)
+	for _, cp := range TestWheatstoneEncryptData {
+		c, err := NewCipher(cp.start, cp.key1, cp.key2)
 
-	assert.NoError(t, err)
-	assert.NotNil(t, c)
+		assert.NoError(t, err)
+		assert.NotNil(t, c)
 
-	src := bytes.NewBufferString(plainTxt).Bytes()
-	enc := bytes.NewBufferString(cipherTxt).Bytes()
-	dst := make([]byte, len(src))
-	c.Encrypt(dst, src)
-	assert.EqualValues(t, enc, dst)
+		src := bytes.NewBufferString(cp.pt).Bytes()
+		enc := bytes.NewBufferString(cp.ct).Bytes()
+		dst := make([]byte, len(src))
+		c.Encrypt(dst, src)
+		assert.EqualValues(t, enc, dst)
+	}
 }
 
-func Testwheatstone_EncryptLong(t *testing.T) {
+func TestWheatstone_EncryptLong(t *testing.T) {
 	c, err := NewCipher('M', key1, key2)
 
 	assert.NoError(t, err)
@@ -188,7 +200,7 @@ func TestWheatstone_Decrypt(t *testing.T) {
 	assert.EqualValues(t, src, dst)
 }
 
-func Testwheatstone_DecryptLong(t *testing.T) {
+func TestWheatstone_DecryptLong(t *testing.T) {
 	c, err := NewCipher('M', key1, key2)
 
 	assert.NoError(t, err)

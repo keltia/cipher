@@ -3,7 +3,6 @@ package crypto
 import (
 	"bytes"
 	"io"
-	"log"
 	"sort"
 	"strings"
 )
@@ -322,7 +321,8 @@ func FixDouble(str string, fill byte) string {
 	return fixed.String()
 }
 
+/*
 // verbose displays only if fVerbose is set
 func message(str string, a ...interface{}) {
 	log.Printf(str, a...)
-}
+}*/
