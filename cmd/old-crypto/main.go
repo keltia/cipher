@@ -73,27 +73,37 @@ func init() {
 }
 
 func main() {
+	var fixpt string
 
 	fmt.Printf("==> Plain = \n%s\n", plain)
 	for _, cp := range allciphers {
 		dst := make([]byte, cp.size)
+		dst1 := make([]byte, len(plain))
 
 		c := cp.c
-		c.Encrypt(dst, []byte(plain))
+
+		if cp.name == "Wheatstone" {
+			fixpt = crypto.FixDouble(plain, 'Q')
+			dst = make([]byte, len(fixpt))
+			dst1 = make([]byte, len(fixpt))
+		} else {
+			fixpt = plain
+
+		}
+		c.Encrypt(dst, []byte(fixpt))
 		fmt.Println("==> ", cp.name)
 		fmt.Printf("%s\n", crypto.ByN(string(dst), 5))
 
 		ncrypt := strings.TrimRight(string(dst), "\x00")
 		src1 := bytes.NewBufferString(ncrypt).Bytes()
-		dst1 := make([]byte, len(plain))
 
 		c.Decrypt(dst1, src1)
 
 		nplain := strings.TrimRight(string(dst1), "\x00")
-		if nplain == plain {
+		if nplain == fixpt {
 			fmt.Printf("decrypt ok\n\n")
 		} else {
-			fmt.Printf("decrypt not ok\n%s\n%s\n\n", plain, nplain)
+			fmt.Printf("decrypt not ok\n%s\n%s\n\n", fixpt, nplain)
 		}
 	}
 }
