@@ -69,9 +69,9 @@ func (c *wheatstone) decode(ch byte) byte {
 
 	a := bytes.IndexByte(c.actw, ch)
 	if a <= c.ctpos {
-		off = (a + lenCT) - c.curpos
+		off = (a + lenCT) - c.ctpos
 	} else {
-		off = a - c.curpos
+		off = a - c.ctpos
 	}
 	c.ctpos = a
 	c.curpos = (c.curpos + off) % lenPL
