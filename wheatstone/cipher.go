@@ -97,13 +97,7 @@ This is necessary because the wheatstone object retain state across calls
 */
 // Reset state to the beginning.
 func (c *wheatstone) reset() {
-	// Transform with key
-	pkey := "+" + crypto.Shuffle(c.pkey, alphabet)
-	ckey := crypto.Shuffle(c.ckey, alphabet)
-
-	c.aplw = bytes.NewBufferString(pkey).Bytes()
-	c.actw = bytes.NewBufferString(ckey).Bytes()
-
+	c.curpos = 0
 	c.ctpos = bytes.IndexByte(c.actw, c.start)
 }
 
