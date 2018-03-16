@@ -3,6 +3,7 @@ package wheatstone
 import (
 	"bytes"
 	"crypto/cipher"
+	"github.com/keltia/cipher"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -18,7 +19,7 @@ var (
 	ckey = "MBOVADPWCFQXHGRYIJSZNKTELU"
 
 	lplainTxt  = "IFYOUCANREADTHISYOUEITHERDOWNLOADEDMYOWNIMPLEMENTATIONOFCHAOCIPHERORYOUWROTEONEOFYOUROWNINEITHERCASELETMEKNOWANDACCEPTMYCONGRATULATIONSX"
-	lcipherTxt = "TLMAGOONSKJBJYBQVGDQCDUNWNMZPLOYCWPCWKWQRBOYADSLQBKYCDGXJOLONKTTLRUZZJQGJBQNRQHQRREUIYIDHZOMVWZMVYUFQOGSNNUVYTJGQPSQTBRWFHLTCLVVBPMYYQVC"
+	lcipherTxt = "PIPTIADNMEWJYKGHGVEOIZUVWEPWVKCIMWBOKXHCLDAOGCRGPMWDNJKJVJDLDQYZEBMOXBKVAVSOABVDBJWBQFQPTWFEMPQRZNTXBHVWGLHIJLGFMMLBZHXYCDUTUOCYNYQJYABYX"
 
 	aplw = []byte{'+', 'C', 'A', 'K', 'S', 'Y', 'I', 'B', 'L', 'T', 'Z', 'P', 'D', 'M', 'U', 'H', 'F', 'N', 'V', 'E', 'G', 'O', 'W', 'R', 'J', 'Q', 'X'}
 	actw = []byte{'M', 'B', 'O', 'V', 'A', 'D', 'P', 'W', 'C', 'F', 'Q', 'X', 'H', 'G', 'R', 'Y', 'I', 'J', 'S', 'Z', 'N', 'K', 'T', 'E', 'L', 'U'}
@@ -180,7 +181,8 @@ func TestWheatstone_EncryptLong(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, c)
 
-	src := bytes.NewBufferString(lplainTxt).Bytes()
+	plain := crypto.FixDouble(lplainTxt, 'Q')
+	src := bytes.NewBufferString(plain).Bytes()
 	enc := bytes.NewBufferString(lcipherTxt).Bytes()
 	dst := make([]byte, len(src))
 	c.Encrypt(dst, src)
@@ -206,7 +208,8 @@ func TestWheatstone_DecryptLong(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, c)
 
-	src := bytes.NewBufferString(lplainTxt).Bytes()
+	plain := crypto.FixDouble(lplainTxt, 'Q')
+	src := bytes.NewBufferString(plain).Bytes()
 	dec := bytes.NewBufferString(lcipherTxt).Bytes()
 	dst := make([]byte, len(dec))
 	c.Decrypt(dst, dec)
