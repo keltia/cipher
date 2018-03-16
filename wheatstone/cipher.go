@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"fmt"
 	"github.com/keltia/cipher"
-	"log"
 )
 
 const (
@@ -108,7 +107,8 @@ func (c *wheatstone) reset() {
 	c.ctpos = bytes.IndexByte(c.actw, c.start)
 }
 
+/*
 // verbose displays only if fVerbose is set
 func message(str string, a ...interface{}) {
 	log.Printf(str, a...)
-}
+}*/
