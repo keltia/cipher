@@ -8,6 +8,10 @@ import (
 	"sort"
 )
 
+/*
+Full description & test vectors: http://www.quadibloc.com/crypto/pp1324.htm
+*/
+
 var (
 	allcipher  = []byte{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
 	enumDigits = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
