@@ -9,12 +9,17 @@ import (
 )
 
 var (
+	allcipher  = []byte{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
 	enumDigits = []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0}
+
+	// English frequent letters
+	freq = []byte{'A', 'T', 'O', 'N', 'E', 'S', 'I', 'R'}
 )
 
 type viccipher struct {
 	ind    string
 	phrase string
+	persn  string
 
 	imsg   []byte
 	ikey5  []byte
@@ -25,9 +30,10 @@ type viccipher struct {
 	tpkeys []byte
 }
 
-func NewCipher(ind, phrase string, imsg string) (cipher.Block, error) {
+func NewCipher(persn, ind, phrase string, imsg string) (cipher.Block, error) {
 	c := &viccipher{
 		ind:    ind,
+		persn:  persn,
 		phrase: phrase,
 		imsg:   str2int(imsg),
 		ikey5:  str2int(ind[:5]),
@@ -38,20 +44,21 @@ func NewCipher(ind, phrase string, imsg string) (cipher.Block, error) {
 
 func (c *viccipher) expandKey() {
 	// First phase
-	message("ind=%s", c.ind)
+	//message("ind=%s", c.ind)
+
 	ph1 := toNumericOne(c.phrase[:10])
 	ph2 := toNumericOne(c.phrase[10:])
-	message("ph1=%v ph2=%v", ph1, ph2)
+	//message("ph1=%v ph2=%v", ph1, ph2)
 
 	res := submod10(c.imsg, c.ikey5)
 	c.first = expand5to10(res)
-	message("res=%v ikey5=%v first=%v", res, c.ikey5, c.first)
+	//message("res=%v ikey5=%v first=%v", res, c.ikey5, c.first)
 
 	// Second phase
 	tmp := addmod10(c.first, ph1)
-	message("tmp=%v", tmp)
+	//message("tmp=%v", tmp)
 	c.second = firstEncode(tmp, ph2) // this will be the key for a transposition later
-	message("second=%v", c.second)
+	//message("second=%v", c.second)
 
 	var tptmp bytes.Buffer
 
@@ -59,15 +66,15 @@ func (c *viccipher) expandKey() {
 	r := crypto.Dup(c.second)
 	for i := 0; i < 5; i++ {
 		r = chainadd(r) // We store the intermediate results
-		message("r=%v", r)
+		//message("r=%v", r)
 		tptmp.Write(r)
 	}
 	tpkeys := tptmp.Bytes()
-	message("tpkeys=%v", tpkeys)
+	//message("tpkeys=%v", tpkeys)
 	c.tpkeys = tpkeys
 
 	fourth := crypto.ToNumeric(string(r))
-	message("fourth=%v", fourth)
+	//message("fourth=%v", fourth)
 	c.third = r // Last one is stored
 
 	// The last one is the Straddling Cherkerboard key
