@@ -10,13 +10,14 @@ EXE=	${BIN}.exe
 
 SRCS= cmd/old-crypto/main.go \
 	  caesar/cipher.go crypto.go wheatstone/cipher.go \
-      crypto_test.go playfair/cipher.go \
+      crypto_test.go playfair/cipher.go vic/cipher.go \
       null/cipher.go chaocipher/cipher.go \
       adfgvx/cipher.go nihilist/cipher.go straddling/cipher.go
 
 SRCST= caesar/cipher_test.go chaocipher/cipher_test.go null/cipher_test.go \
 	   playfair/cipher_test.go adfgvx/cipher_test.go straddling/cipher_test.go \
-	   nihilist/cipher_test.go wheatstone/cipher_test.go
+	   nihilist/cipher_test.go wheatstone/cipher_test.go \
+	   vic/cipher_test.go
 
 OPTS=	-ldflags="-s -w" -v
 
