@@ -140,16 +140,6 @@ func firstEncode(a, b []byte) []byte {
 	return r.Bytes()
 }
 
-func transp(a, key []byte) []byte {
-	var b bytes.Buffer
-
-	for _, v := range a {
-		j := bytes.IndexByte(key, v)
-		b.WriteByte(a[j])
-	}
-	return b.Bytes()
-}
-
 func (c *viccipher) BlockSize() int {
 	return 1
 }
