@@ -24,7 +24,7 @@ OPTS=	-ldflags="-s -w" -v
 all: ${BIN} ${EXE}
 
 ${BIN}: ${SRCS}
-	go build -o ${BIN} ${OPTS} cmd/${BIN}/main.go
+	go build -o ${BIN} ${OPTS} ./cmd/...
 
 ${EXE}: ${SRCS}
 	GOOS=windows go build -o ${EXE} ${OPTS}  cmd/${BIN}/main.go
