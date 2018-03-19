@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/cipher"
 	"github.com/keltia/cipher"
+	"github.com/keltia/cipher/transposition"
 	"log"
 	"sort"
 )
@@ -32,6 +33,9 @@ type viccipher struct {
 	third  []byte
 	sckey  []byte
 	tpkeys []byte
+
+	// First transposition
+	firsttp *cipher.Block
 }
 
 func NewCipher(persn, ind, phrase string, imsg string) (cipher.Block, error) {
@@ -43,6 +47,14 @@ func NewCipher(persn, ind, phrase string, imsg string) (cipher.Block, error) {
 		ikey5:  str2int(ind[:5]),
 	}
 	c.expandKey()
+
+	// We have two transpositions, first one is regular
+	transp, err := transposition.NewCipher(string(c.second))
+	if err != nil {
+		return nil, err
+	}
+
+	c.firsttp = &transp
 	return c, nil
 }
 
