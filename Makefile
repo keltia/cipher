@@ -49,6 +49,7 @@ install: ${BIN}
 clean:
 	go clean -v
 	/bin/rm -f pkg/${BIN}.tar.xz pkg/${BIN}.zip
+	/bin/rm -f ${BIN} ${EXE}
 
 push:
 	git push --all
