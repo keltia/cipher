@@ -21,6 +21,8 @@ type viccipher struct {
 	first  []byte
 	second []byte
 	third  []byte
+	sckey  []byte
+	tpkeys []byte
 }
 
 func NewCipher(ind, phrase string, imsg string) (cipher.Block, error) {
@@ -51,24 +53,25 @@ func (c *viccipher) expandKey() {
 	c.second = firstEncode(tmp, ph2) // this will be the key for a transposition later
 	message("second=%v", c.second)
 
-	var sctmp bytes.Buffer
+	var tptmp bytes.Buffer
 
 	// Third phase
 	r := crypto.Dup(c.second)
 	for i := 0; i < 5; i++ {
 		r = chainadd(r) // We store the intermediate results
 		message("r=%v", r)
-		sctmp.Write(r)
+		tptmp.Write(r)
 	}
-	sckey := sctmp.Bytes()
-	message("sckey=%v", sckey)
+	tpkeys := tptmp.Bytes()
+	message("tpkeys=%v", tpkeys)
+	c.tpkeys = tpkeys
 
-	r1 := crypto.Dup(r)
-	r1 = bytes.Map(func(r rune) rune { return ((r + 1) % 10) }, r1)
-	message("r1=%v", r1)
-	fourth := firstEncode(r1, enumDigits)
-	message("fourth=%s", fourth)
+	fourth := crypto.ToNumeric(string(r))
+	message("fourth=%v", fourth)
 	c.third = r // Last one is stored
+
+	// The last one is the Straddling Cherkerboard key
+	c.sckey = fourth
 }
 
 // toNumericOne is ToNumeric interalized to return 1-based arrays
@@ -135,6 +138,16 @@ func firstEncode(a, b []byte) []byte {
 		r.WriteByte(b[(v+10)%10-1])
 	}
 	return r.Bytes()
+}
+
+func transp(a, key []byte) []byte {
+	var b bytes.Buffer
+
+	for _, v := range a {
+		j := bytes.IndexByte(key, v)
+		b.WriteByte(a[j])
+	}
+	return b.Bytes()
 }
 
 func (c *viccipher) BlockSize() int {
