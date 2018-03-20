@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewCipher(t *testing.T) {
-	c, err := NewCipher("741776", "IDREAMOFJEANNIEWITHT", "77651")
+	c, err := NewCipher("8", "741776", "IDREAMOFJEANNIEWITHT", "77651")
 
 	assert.NotNil(t, c)
 	assert.NoError(t, err)
@@ -99,7 +99,7 @@ func TestFirstEncode(t *testing.T) {
 }
 
 func TestViccipher_BlockSize(t *testing.T) {
-	c, _ := NewCipher("741776", "IDREAMOFJEANNIEWITHT", "77651")
+	c, _ := NewCipher("8", "741776", "IDREAMOFJEANNIEWITHT", "77651")
 
 	assert.NotNil(t, c)
 	assert.Equal(t, 1, c.BlockSize())
@@ -114,7 +114,7 @@ func BenchmarkNewCipher(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		c, _ = NewCipher("741776", "IDREAMOFJEANNIEWITHT", "77651")
+		c, _ = NewCipher("8", "741776", "IDREAMOFJEANNIEWITHT", "77651")
 	}
 	gc = c
 }
