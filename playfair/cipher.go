@@ -2,9 +2,7 @@ package playfair
 
 import (
 	"crypto/cipher"
-	"fmt"
 	"github.com/keltia/cipher"
-	"log"
 )
 
 const (
@@ -27,13 +25,6 @@ type Cipher struct {
 
 type couple struct {
 	r, c byte
-}
-
-// Debug displays the internal state
-func (c *Cipher) Debug() {
-	fmt.Printf("key=%s\n", c.key)
-	fmt.Printf("i2c=%v\n", c.i2c)
-	fmt.Printf("c2i=%v\n", c.c2i)
 }
 
 // transform is the cipher itself
@@ -111,7 +102,8 @@ func (c *Cipher) Decrypt(dst, src []byte) {
 	}
 }
 
+/*
 // verbose displays only if fVerbose is set
 func message(str string, a ...interface{}) {
 	log.Printf(str, a...)
-}
+}*/
