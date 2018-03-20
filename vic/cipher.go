@@ -93,7 +93,7 @@ func (c *viccipher) expandKey() {
 	//message("fourth=%v", fourth)
 	c.third = r // Last one is stored
 
-	// The last one is the Straddling Cherkerboard key
+	// The last one is the Straddling Checkerboard key
 	c.sckey = fourth
 }
 
